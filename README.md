@@ -1,3 +1,14 @@
+# Stash Wallet
+Stash Wallet is a user-friendly, secure cryptocurrency wallet designed to streamline digital asset management on the Solana blockchain. With a focus on ease of use, Stash Wallet enables users to generate custom, human-readable wallet addresses, simplifying transactions and enhancing security.
+
+## Features
+- Custom Wallet Addresses: Create readable and recognizable wallet addresses for free, making transactions simpler and safer.
+- Private & Secure: Built with robust encryption and security measures to ensure your funds remain safe.
+- Solana Blockchain Integration: Seamlessly interact with the Solana network using Solana web3.js library.
+- Non-Custodial: Full control over your private keys and assets, ensuring true ownership of your digital assets.
+- Simple UI: Clean and intuitive interface for easy navigation and quick transactions.
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
