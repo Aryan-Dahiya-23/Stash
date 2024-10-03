@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useState, useEffect } from "react";
 import { Keypair } from "@solana/web3.js";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -20,20 +21,20 @@ export default function Home() {
 
   const [wallet, setWallet] = useState({});
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      // const storedWallet = localStorage.getItem("wallet");
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const storedWallet = localStorage.getItem("wallet");
 
-      const storedWallet = null;
+  //     // const storedWallet = null;
 
-      if (storedWallet) {
-        setWallet(JSON.parse(storedWallet));
-      } else {
-        // Redirect to login if no wallet is found
-        router.push("/login");
-      }
-    }
-  }, [router]);
+  //     if (storedWallet) {
+  //       setWallet(JSON.parse(storedWallet));
+  //     } else {
+  //       // Redirect to login if no wallet is found
+  //       router.push("/login");
+  //     }
+  //   }
+  // }, [router]);
 
   function generateWallet() {
     // Generate a new 12-word mnemonic phrase

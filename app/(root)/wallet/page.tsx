@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import {
@@ -11,12 +12,20 @@ import {
   Keypair,
 } from "@solana/web3.js";
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { Loader2, X } from "lucide-react";
 import QRCode from "react-qr-code";
 import toast, { Toaster } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import React from "react";
+import CryptoJS from "crypto-js";
+
+interface Wallet {
+  publicKey: string;
+  privateKey: string;
+}
 
 export default function Home() {
   const router = useRouter();
@@ -28,25 +37,35 @@ export default function Home() {
   const [isTransactionPending, setIsTransactionPending] =
     useState<boolean>(false);
   const [showQR, setShowQR] = useState<boolean>(false);
-  // const wallet = JSON.parse(localStorage.getItem("wallet") ?? "{}");
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [wallet, setWallet] = useState<any>(null); // Initially set wallet to null
+  const [wallet, setWallet] = useState<Wallet | null>(null);
 
   useEffect(() => {
-    // Ensure that `localStorage` is only accessed after the component mounts
     if (typeof window !== "undefined") {
-      const storedWallet = localStorage.getItem("wallet");
-      if (storedWallet) {
-        setWallet(JSON.parse(storedWallet));
+      const privateKey = Cookies.get("privateKey") || "";
+
+      if (privateKey) {
+        try {
+          const secretKey = Uint8Array.from(Buffer.from(privateKey, "hex"));
+          const solanaKeypair = Keypair.fromSecretKey(secretKey);
+          const publicKey = solanaKeypair.publicKey.toBase58();
+
+          setWallet({ publicKey, privateKey });
+          getBalance();
+          console.log(publicKey);
+        } catch (error) {
+          console.error("Invalid private key format", error);
+          router.push("/login");
+        }
       } else {
-        // Handle the case where the wallet is not present in localStorage
         router.push("/login");
       }
     }
   }, [router]);
 
   const getBalance = async () => {
+    console.log("getting balance");
+    if (!wallet || !wallet.publicKey) return;
+
     const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
     const publicKey = new PublicKey(wallet.publicKey);
     setBalance((await connection.getBalance(publicKey)) / LAMPORTS_PER_SOL);
@@ -62,14 +81,14 @@ export default function Home() {
 
     transaction.add(
       SystemProgram.transfer({
-        fromPubkey: new PublicKey(wallet.publicKey),
+        fromPubkey: new PublicKey(wallet?.publicKey ?? ""),
         toPubkey: new PublicKey(receiverAddress),
         lamports: parseFloat(solanaAmount) * LAMPORTS_PER_SOL,
       })
     );
 
     // Assuming you have the private key as a hex string
-    const privateKeyHex = wallet.privateKey;
+    const privateKeyHex = wallet?.privateKey ?? "";
     console.log(privateKeyHex);
 
     // Step 1: Convert the private key from hex to Uint8Array
@@ -87,7 +106,6 @@ export default function Home() {
       Buffer.from(solanaKeypair.secretKey).toString("hex")
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const signature = await sendAndConfirmTransaction(connection, transaction, [
       solanaKeypair,
     ]);
@@ -100,19 +118,18 @@ export default function Home() {
   };
 
   const logout = () => {
-    localStorage.removeItem("wallet");
     const deleteCookie = (name: string) => {
       document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
     };
 
-    // Delete cookies for publicKey and privateKey
-    deleteCookie("publicKey");
+    deleteCookie("encryptedData");
     deleteCookie("privateKey");
+    deleteCookie("publicKey");
     router.push("/");
   };
 
   const copyAddress = () => {
-    navigator.clipboard.writeText(wallet.publicKey);
+    navigator.clipboard.writeText(wallet?.publicKey ?? "");
     toast("Copied!", {
       icon: "📋",
     });
@@ -124,7 +141,19 @@ export default function Home() {
 
   useEffect(() => {
     getBalance();
-  }, [successful]);
+  }, [successful, wallet]);
+
+  useEffect(() => {
+    console.log(wallet);
+  }, [wallet]);
+
+  useEffect(() => {
+    const decrypted = CryptoJS.AES.decrypt(
+      Cookies.get("solanaEncryptedPrivateKey") || "",
+      "aryan"
+    );
+    console.log(`Decrypted data: ${decrypted.toString(CryptoJS.enc.Utf8)}`);
+  }, [wallet, successful]);
 
   return (
     <div className="bg-black text-white p-6 rounded-lg text-center max-w-md mx-auto">
@@ -150,11 +179,11 @@ export default function Home() {
 
           <QRCode
             className="h-40 w-40 bg-white p-2 rounded-md"
-            value={wallet.publicKey}
+            value={wallet?.publicKey ?? ""}
             size={256}
           />
           <p className="break-all w-full max-w-[75%] text-sm">
-            {wallet.publicKey}
+            {wallet?.publicKey}
           </p>
 
           <div className="flex flex-col justify-center items-center  space-y-4">
