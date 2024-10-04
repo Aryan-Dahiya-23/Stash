@@ -1,118 +1,102 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Keypair } from "@solana/web3.js";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { generateMnemonic, mnemonicToSeedSync } from "bip39";
 import { derivePath } from "ed25519-hd-key";
 import nacl from "tweetnacl";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import toast from "react-hot-toast";
+import CryptoJS from "crypto-js";
+import { SeedPhrase } from "@/components/shared/SeedPhrase";
+import { Password } from "@/components/shared/Password";
 
 export default function Home() {
   const router = useRouter();
 
   const [mnemonic, setMnemonic] = useState<string>("");
-  // const [wallet, setWallet] = useState<object>(
-  //   JSON.parse(localStorage.getItem("wallet") || "{}")
-  // );
-
-  const [wallet, setWallet] = useState({});
-
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     const storedWallet = localStorage.getItem("wallet");
-
-  //     // const storedWallet = null;
-
-  //     if (storedWallet) {
-  //       setWallet(JSON.parse(storedWallet));
-  //     } else {
-  //       // Redirect to login if no wallet is found
-  //       router.push("/login");
-  //     }
-  //   }
-  // }, [router]);
+  const [privateKey, setPrivateKey] = useState<string>("");
+  const [isWalletSuccess, setIsWalletSuccess] = useState<boolean>(false);
+  const [password, setPassword] = useState<string>("");
+  const [verifyPassword, setVerifyPassword] = useState<string>("");
 
   function generateWallet() {
-    // Generate a new 12-word mnemonic phrase
     const newMnemonic = generateMnemonic();
     setMnemonic(newMnemonic);
     console.log(`Generated Mnemonic: ${mnemonic}`);
 
-    // Convert mnemonic to a seed
     const seed = mnemonicToSeedSync(newMnemonic);
 
-    // Define the derivation path for Solana (BIP44: m/44'/501'/0'/0')
     const path = `m/44'/501'/0'/0'`;
     const derivedSeed = derivePath(path, seed.toString("hex")).key;
 
-    // Generate keypair from the derived seed
-    const keypair = nacl.sign.keyPair.fromSeed(derivedSeed);
+    const derivedSeedUint8Array = new Uint8Array(derivedSeed);
 
-    // Convert the keypair to Solana-compatible public and private keys
+    const keypair = nacl.sign.keyPair.fromSeed(derivedSeedUint8Array);
+
     const solanaKeypair = Keypair.fromSecretKey(keypair.secretKey);
     const publicKey = solanaKeypair.publicKey.toBase58();
     const privateKey = Buffer.from(solanaKeypair.secretKey).toString("hex");
-    setWallet({ publicKey, privateKey });
-
-    // localStorage.setItem("wallet", JSON.stringify({ publicKey, privateKey }));
   }
 
+  const setCookie = () => {
+    const encryptedData = CryptoJS.AES.encrypt(mnemonic, password).toString();
+
+    Cookies.set("encryptedData", encryptedData, {
+      expires: 50000,
+      secure: true,
+    });
+
+    const now = new Date();
+
+    now.setTime(now.getTime() + 10 * 60 * 1000);
+
+    Cookies.set("privateKey", privateKey, {
+      expires: now,
+      secure: true,
+    });
+
+    const secretKey = Uint8Array.from(Buffer.from(privateKey, "hex"));
+    const solanaKeypair = Keypair.fromSecretKey(secretKey);
+    const publicKey = solanaKeypair.publicKey.toBase58();
+
+    Cookies.set("publicKey", publicKey, {
+      expires: now,
+      secure: true,
+    });
+
+    toast("Hey, There!", {
+      icon: "👋",
+    });
+
+    router.push("/wallet");
+  };
   return (
-    <>
-      {Object.keys(wallet).length === 0 ? (
-        <div className="h-full flex flex-col justify-center items-center">
-          <Button className="bg-blue-400" onClick={generateWallet}>
-            Generate Wallet
-          </Button>
-        </div>
-      ) : (
-        <div className="min-h-screen bg-gray-900 text-white flex flex-col justify-center items-center p-4">
-          <div className="flex items-center space-x-2 mb-8">
-            <div className="w-3 h-3 rounded-full bg-blue-400"></div>
-            <div className="w-3 h-3 rounded-full bg-blue-400"></div>
-            <div className="w-3 h-3 rounded-full bg-gray-600"></div>
-          </div>
-
-          <h1 className="text-2xl font-bold text-center mb-4">
-            Your Secret Recovery Phrase
-          </h1>
-
-          <p className="text-center text-gray-400 mb-6">
-            This phrase unlocks your wallet. Do <strong>NOT</strong> share.
-            Write it down on a paper and store securely.
-          </p>
-
-          <div className="grid grid-cols-3 gap-4 mb-6 text-sm">
-            {mnemonic.split(" ").map((word, index) => (
-              <div
-                key={index}
-                className="border border-gray-600 p-2 rounded-lg text-center"
-              >
-                <span className="text-gray-500">{index + 1}.</span>{" "}
-                <span>{word}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex items-center space-x-2 mb-6">
-            <Checkbox id="save-recovery-phrase" />
-            <label
-              htmlFor="save-recovery-phrase"
-              className="text-gray-400 select-none"
-            >
-              My Secret Recovery Phrase is <strong>saved</strong>.
-            </label>
-          </div>
-          <Button asChild className="w-full bg-blue-500 text-white">
-            <Link href="/wallet">Continue </Link>
-          </Button>
-        </div>
+    <div className="h-[600px] relative p-4 flex flex-col items-center">
+      {!isWalletSuccess && (
+        <SeedPhrase
+          mnemonic={mnemonic}
+          setMnemonic={setMnemonic}
+          isWalletSuccess={isWalletSuccess}
+          setIsWalletSuccess={setIsWalletSuccess}
+          privateKey={privateKey}
+          setPrivateKey={setPrivateKey}
+        />
       )}
-    </>
+
+      {isWalletSuccess && (
+        <Password
+          password={password}
+          setPassword={setPassword}
+          verifyPassword={verifyPassword}
+          setVerifyPassword={setVerifyPassword}
+          setCookie={setCookie}
+        />
+      )}
+    </div>
   );
 }
 

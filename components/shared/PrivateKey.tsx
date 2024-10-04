@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import Image from "next/image";
 import BackArrowIcon from "../../public/assets/back-arrow-icon.png";
 import HideIcon from "../../public/assets/Hide.png";
 import { Keypair } from "@solana/web3.js";
+import toast from "react-hot-toast";
 
 interface PrivateKeyProps {
   importSuccess: boolean;
@@ -13,38 +13,28 @@ interface PrivateKeyProps {
 }
 
 export const PrivateKey: React.FC<PrivateKeyProps> = ({
-  importSuccess,
   setImportSuccess,
   privateKey,
   setPrivateKey,
 }) => {
-  const verifyPrivateKey = (privateKeyHex: string) => {
+  const importWalletUsingPrivateKey = () => {
     try {
-      const privateKeyArray = Uint8Array.from(
-        Buffer.from(privateKeyHex, "hex")
-      );
+      const privateKeyArray = Uint8Array.from(Buffer.from(privateKey, "hex"));
 
       const keypair = Keypair.fromSecretKey(privateKeyArray);
 
-      const publicKey = keypair.publicKey.toBase58();
-
-      console.log("Public Key:", publicKey);
-
-      return publicKey;
+      if (keypair) {
+        setImportSuccess(true);
+        toast.success("Wallet imported successfully!", {
+          icon: "✅",
+        });
+      }
     } catch (error) {
       console.error("Invalid private key:", error);
-      return null;
+      toast.error("Invalid private key. Please check and try again.", {
+        icon: "❌",
+      });
     }
-  };
-
-  const importWalletUsingPrivateKey = () => {
-    const privateKeyArray = Uint8Array.from(Buffer.from(privateKey, "hex"));
-    const keypair = Keypair.fromSecretKey(privateKeyArray);
-    const publicKey = keypair.publicKey.toBase58();
-
-    setImportSuccess(true);
-
-    console.log("Public Key:", publicKey);
   };
 
   return (

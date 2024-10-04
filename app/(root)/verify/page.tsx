@@ -10,6 +10,7 @@ import { Password } from "@/components/shared/Password";
 import { useRouter } from "next/navigation";
 import { Keypair } from "@solana/web3.js";
 import nacl from "tweetnacl";
+import toast from "react-hot-toast";
 
 export default function Home() {
   const router = useRouter();
@@ -119,6 +120,9 @@ export default function Home() {
         secure: true,
       });
     }
+    toast("Welcome Back", {
+      icon: "👋",
+    });
     router.push("/wallet");
   };
 

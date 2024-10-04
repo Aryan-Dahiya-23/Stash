@@ -16,7 +16,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { Loader2, X } from "lucide-react";
 import QRCode from "react-qr-code";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React from "react";
@@ -125,6 +125,9 @@ export default function Home() {
     deleteCookie("encryptedData");
     deleteCookie("privateKey");
     deleteCookie("publicKey");
+    toast("Successfully Logged Out", {
+      icon: "✅",
+    });
     router.push("/");
   };
 
@@ -157,9 +160,6 @@ export default function Home() {
 
   return (
     <div className="bg-black text-white p-6 rounded-lg text-center max-w-md mx-auto">
-      <div>
-        <Toaster />
-      </div>
       {showQR ? (
         <div className="relative flex flex-col justify-center items-center space-y-8 mt-24 p-10">
           {/* <button
