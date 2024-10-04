@@ -14,13 +14,13 @@ import {
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { Loader2, X } from "lucide-react";
-import QRCode from "react-qr-code";
 import toast from "react-hot-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import React from "react";
-import CryptoJS from "crypto-js";
+import axios from "axios";
+import { Receive } from "@/components/shared/Receive";
+import { Header } from "@/components/shared/Header";
+import { Footer } from "@/components/shared/Footer";
+import { Wallet } from "@/components/shared/Wallet";
 
 interface Wallet {
   publicKey: string;
@@ -30,7 +30,8 @@ interface Wallet {
 export default function Home() {
   const router = useRouter();
 
-  const [balance, setBalance] = useState<number>();
+  const [balance, setBalance] = useState<number>(0);
+  const [solanaLivePrice, setSolanaLivePrice] = useState<number>(0);
   const [receiverAddress, setReceiverAddress] = useState<string>("");
   const [solanaAmount, setSolanaAmount] = useState<string>("");
   const [successful, setSuccessful] = useState<number>(0);
@@ -51,9 +52,7 @@ export default function Home() {
 
           setWallet({ publicKey, privateKey });
           getBalance();
-          console.log(publicKey);
         } catch (error) {
-          console.error("Invalid private key format", error);
           router.push("/login");
         }
       } else {
@@ -87,19 +86,15 @@ export default function Home() {
       })
     );
 
-    // Assuming you have the private key as a hex string
     const privateKeyHex = wallet?.privateKey ?? "";
     console.log(privateKeyHex);
 
-    // Step 1: Convert the private key from hex to Uint8Array
     const secretKey = Uint8Array.from(Buffer.from(privateKeyHex, "hex"));
     console.log(secretKey);
 
-    // Step 2: Reconstruct the Solana Keypair using the secret key
     const solanaKeypair = Keypair.fromSecretKey(secretKey);
     console.log(solanaKeypair);
 
-    // You now have the full Solana keypair
     console.log("Public Key:", solanaKeypair.publicKey.toBase58());
     console.log(
       "Private Key:",
@@ -140,119 +135,44 @@ export default function Home() {
 
   setTimeout(() => {
     setSuccessful(successful + 1);
-  }, 4000);
+  }, 10000);
+
+  const getPrice = async () => {
+    const response = await axios.get(
+      "https://api.diadata.org/v1/assetQuotation/Solana/0x0000000000000000000000000000000000000000"
+    );
+    setSolanaLivePrice(response.data.Price);
+  };
 
   useEffect(() => {
     getBalance();
+    getPrice();
   }, [successful, wallet]);
 
-  useEffect(() => {
-    console.log(wallet);
-  }, [wallet]);
-
-  useEffect(() => {
-    const decrypted = CryptoJS.AES.decrypt(
-      Cookies.get("solanaEncryptedPrivateKey") || "",
-      "aryan"
-    );
-    console.log(`Decrypted data: ${decrypted.toString(CryptoJS.enc.Utf8)}`);
-  }, [wallet, successful]);
-
   return (
-    <div className="bg-black text-white p-6 rounded-lg text-center max-w-md mx-auto">
+    <div className="h-[600px] relative flex flex-col items-center">
+      <Header
+        publicKey={wallet ? wallet.publicKey : ""}
+        copyAddress={copyAddress}
+      />
+      <div className="w-[360px] border border-[#5f5f5f46] mt-3"></div>
+
       {showQR ? (
-        <div className="relative flex flex-col justify-center items-center space-y-8 mt-24 p-10">
-          {/* <button
-            onClick={() => setShowQR(false)}
-            className="absolute top-0 right-0 mt-2 mr-2 p-2 text-white bg-red-500 rounded-full hover:bg-red-600 focus:outline-none"
-          >
-            X
-          </button> */}
-
-          <Button
-            onClick={() => setShowQR(false)}
-            className="top-0 right-0 absolute "
-            variant="ghost"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-
-          <QRCode
-            className="h-40 w-40 bg-white p-2 rounded-md"
-            value={wallet?.publicKey ?? ""}
-            size={256}
-          />
-          <p className="break-all w-full max-w-[75%] text-sm">
-            {wallet?.publicKey}
-          </p>
-
-          <div className="flex flex-col justify-center items-center  space-y-4">
-            <Button className="" onClick={copyAddress}>
-              Copy Address
-            </Button>
-            <p className="text-xs break-all">
-              This address can only receive assets on Solana
-            </p>
-          </div>
-        </div>
+        <Receive
+          publicKey={wallet ? wallet.publicKey : ""}
+          copyAddress={copyAddress}
+          showQR={showQR}
+          setShowQR={setShowQR}
+        />
       ) : (
-        <>
-          <h2 className="text-lg font-medium text-gray-400 mb-2">
-            Wallet Value
-          </h2>
-          <div className="text-5xl font-bold">
-            {balance && balance.toFixed(2) + ` SOL`}
-          </div>
-          <div className="text-green-400 text-xl flex justify-center items-center mt-2"></div>
-
-          <form className="bg-gray-600 p-6 rounded-lg shadow-lg mt-16">
-            <div className="mb-4 flex flex-col space-y-4">
-              <Input
-                type="text"
-                value={receiverAddress}
-                onChange={(e) => setReceiverAddress(e.target.value)}
-                placeholder="Wallet Address"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-
-              <Input
-                type="text"
-                value={solanaAmount}
-                // onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                //   setSolanaAmount(Number(e.target.value))
-                // }
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setSolanaAmount(e.target.value)
-                }
-                placeholder="Solana Amount"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <Button
-              disabled={isTransactionPending || receiverAddress === ""}
-              onClick={sendTransaction}
-              className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {isTransactionPending && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              {isTransactionPending ? "Sending" : "Send"}
-            </Button>
-          </form>
-
-          <Button className="w-5/6 mt-10 rounded-md" onClick={logout}>
-            Logout
-          </Button>
-
-          <Button
-            className="w-5/6 mt-10 rounded-md"
-            onClick={() => setShowQR(true)}
-          >
-            Receive
-          </Button>
-        </>
+        <Wallet
+          balance={balance}
+          solanaLivePrice={solanaLivePrice}
+          setShowQR={setShowQR}
+        />
       )}
+
+      <Footer />
     </div>
   );
 }

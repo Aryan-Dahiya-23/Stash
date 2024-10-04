@@ -25,7 +25,7 @@ export const ImportWallet: React.FC<ImportWalletProps> = ({
     <>
       <button
         onClick={() => router.push("/")}
-        className="absolute top-4 left-4 focus:outline-none ml-2 mt-4"
+        className="absolute top-2 left-2 focus:outline-none ml-2 mt-4"
       >
         <Image src={BackArrowIcon} width={30} height={30} alt="Back Arrow" />
       </button>

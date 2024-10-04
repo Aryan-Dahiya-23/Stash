@@ -10,12 +10,15 @@ interface PrivateKeyProps {
   setImportSuccess: React.Dispatch<React.SetStateAction<boolean>>;
   privateKey: string;
   setPrivateKey: React.Dispatch<React.SetStateAction<string>>;
+  recover: boolean;
+  setRecover: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const PrivateKey: React.FC<PrivateKeyProps> = ({
   setImportSuccess,
   privateKey,
   setPrivateKey,
+  setRecover,
 }) => {
   const importWalletUsingPrivateKey = () => {
     try {
@@ -39,7 +42,10 @@ export const PrivateKey: React.FC<PrivateKeyProps> = ({
 
   return (
     <>
-      <button className="absolute top-4 left-4 focus:outline-none ml-2 mt-4">
+      <button
+        onClick={() => setRecover(false)}
+        className="absolute top-2 left-2 focus:outline-none ml-2 mt-4"
+      >
         <Image src={BackArrowIcon} width={30} height={30} alt="Back Arrow" />
       </button>
 

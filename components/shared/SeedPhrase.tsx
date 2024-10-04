@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Keypair } from "@solana/web3.js";
 import * as bip39 from "bip39";
 import { generateMnemonic, mnemonicToSeedSync } from "bip39";
 import { derivePath } from "ed25519-hd-key";
 import nacl from "tweetnacl";
 import toast from "react-hot-toast";
+import BackArrowIcon from "../../public/assets/back-arrow-icon.png";
 
 interface SeedPhraseProps {
   mnemonic: string;
@@ -15,6 +17,8 @@ interface SeedPhraseProps {
   setIsWalletSuccess: React.Dispatch<React.SetStateAction<boolean>>;
   privateKey: string;
   setPrivateKey: React.Dispatch<React.SetStateAction<string>>;
+  recover: boolean;
+  setRecover: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const SeedPhrase: React.FC<SeedPhraseProps> = ({
@@ -24,9 +28,12 @@ export const SeedPhrase: React.FC<SeedPhraseProps> = ({
   setIsWalletSuccess,
   privateKey,
   setPrivateKey,
+  recover,
+  setRecover,
 }) => {
   const router = useRouter();
 
+  const [isWalletGenerated, setIsWalletGenerated] = useState<boolean>(false);
   const [seedWords, setSeedWords] = useState<string[]>(Array(12).fill(""));
   const pathname = window.location.pathname;
 
@@ -103,6 +110,7 @@ export const SeedPhrase: React.FC<SeedPhraseProps> = ({
     const publicKey = solanaKeypair.publicKey.toBase58();
     const privateKey = Buffer.from(solanaKeypair.secretKey).toString("hex");
     setPrivateKey(privateKey);
+    setIsWalletGenerated(true);
     toast("Wallet successfully generated", {
       icon: "✅",
     });
@@ -111,11 +119,37 @@ export const SeedPhrase: React.FC<SeedPhraseProps> = ({
   return (
     <>
       <div className="w-full text-center text-[#dde0e3] text-[25px] font-semibold mb-4 mt-14">
-        <div>Import existing wallet</div>
+        {pathname === "/import" ||
+          (!isWalletGenerated && (
+            <button
+              onClick={
+                pathname === "/import"
+                  ? () => setRecover(false)
+                  : () => router.push("/")
+              }
+              className="absolute top-2 left-2 focus:outline-none ml-2 mt-4"
+            >
+              <Image
+                src={BackArrowIcon}
+                width={30}
+                height={30}
+                alt="Back Arrow"
+              />
+            </button>
+          ))}
+
+        <div>
+          {pathname === "/import"
+            ? "Import existing wallet"
+            : "Your Secret Recovery Phrase"}
+        </div>
       </div>
       <div className="w-full text-center text-[#dde0e3] text-[14px] font-medium mb-8">
         <div>Make sure you're alone,</div>
-        <div>then type your 12-word recovery phrase here</div>
+        <div>
+          then {pathname === "/import " ? "type" : "generate"} your 12-word
+          recovery phrase here
+        </div>
       </div>
       <div className="grid grid-cols-3 gap-2 w-full mb-4">
         {seedWords.map((word, index) => (

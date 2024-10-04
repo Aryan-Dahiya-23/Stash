@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 import CryptoJS from "crypto-js";
 import { SeedPhrase } from "@/components/shared/SeedPhrase";
 import { Password } from "@/components/shared/Password";
+import { Congratulations } from "@/components/shared/Congratulations";
 
 export default function Home() {
   const router = useRouter();
@@ -20,6 +21,7 @@ export default function Home() {
   const [mnemonic, setMnemonic] = useState<string>("");
   const [privateKey, setPrivateKey] = useState<string>("");
   const [isWalletSuccess, setIsWalletSuccess] = useState<boolean>(false);
+  const [congratulations, setCongratulations] = useState<boolean>(false);
   const [password, setPassword] = useState<string>("");
   const [verifyPassword, setVerifyPassword] = useState<string>("");
 
@@ -68,15 +70,18 @@ export default function Home() {
       secure: true,
     });
 
-    toast("Hey, There!", {
-      icon: "👋",
-    });
+    setCongratulations(true);
+    setIsWalletSuccess(false);
 
-    router.push("/wallet");
+    // toast("Hey, There!", {
+    //   icon: "👋",
+    // });
+
+    // router.push("/wallet");
   };
   return (
     <div className="h-[600px] relative p-4 flex flex-col items-center">
-      {!isWalletSuccess && (
+      {!isWalletSuccess && !congratulations && (
         <SeedPhrase
           mnemonic={mnemonic}
           setMnemonic={setMnemonic}
@@ -87,7 +92,7 @@ export default function Home() {
         />
       )}
 
-      {isWalletSuccess && (
+      {isWalletSuccess && !congratulations && (
         <Password
           password={password}
           setPassword={setPassword}
@@ -96,6 +101,8 @@ export default function Home() {
           setCookie={setCookie}
         />
       )}
+
+      {congratulations && <Congratulations />}
     </div>
   );
 }

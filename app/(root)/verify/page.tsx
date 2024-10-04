@@ -92,12 +92,23 @@ export default function Home() {
   };
 
   const setCookie = () => {
-    const decrypted = CryptoJS.AES.decrypt(
-      Cookies.get("encryptedData") || "",
-      password
-    );
+    let decryptedData = "";
+    try {
+      const decrypted = CryptoJS.AES.decrypt(
+        Cookies.get("encryptedData") || "",
+        password
+      );
+      decryptedData = decrypted.toString(CryptoJS.enc.Utf8);
 
-    const decryptedData = decrypted.toString(CryptoJS.enc.Utf8);
+      if (!decryptedData) {
+        toast.error("Invalid Password");
+        return;
+      }
+    } catch (error) {
+      toast.error("Invalid Password");
+      return;
+    }
+
     const check = checkDecryptedData(decryptedData);
     if (check === "mnemonic") {
       generatePrivateKey(decryptedData);
@@ -134,6 +145,8 @@ export default function Home() {
         verifyPassword={verifyPassword}
         setVerifyPassword={setVerifyPassword}
         setCookie={setCookie}
+        wallet={false}
+        setWallet={() => {}}
       />
     </div>
   );

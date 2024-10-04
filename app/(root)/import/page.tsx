@@ -1,23 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import secureLocalStorage from "react-secure-storage";
 import { Keypair } from "@solana/web3.js";
-import * as bip39 from "bip39";
-import nacl from "tweetnacl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CryptoJS from "crypto-js";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import Image from "next/image";
-import { createCipheriv, randomBytes, scryptSync } from "crypto";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+
 import { ImportWallet } from "@/components/shared/ImportWallet";
 import { SeedPhrase } from "@/components/shared/SeedPhrase";
 import { PrivateKey } from "@/components/shared/PrivateKey";
 import { Password } from "@/components/shared/Password";
 import toast from "react-hot-toast";
+import { Congratulations } from "@/components/shared/Congratulations";
 
 export default function Home() {
   const router = useRouter();
@@ -30,6 +25,7 @@ export default function Home() {
   const [privateKey, setPrivateKey] = useState<string>("");
   const [mnemonic, setMnemonic] = useState<string>("");
   const [importSuccess, setImportSuccess] = useState<boolean>(false);
+  const [congratulations, setCongratulations] = useState<boolean>(false);
   const [password, setPassword] = useState<string>("");
   const [verifyPassword, setVerifyPassword] = useState<string>("");
 
@@ -65,11 +61,13 @@ export default function Home() {
       secure: true,
     });
 
-    toast("Welcome Back", {
-      icon: "👋",
-    });
+    setCongratulations(true);
 
-    router.push("/wallet");
+    // toast("Welcome Back", {
+    //   icon: "👋",
+    // });
+
+    // router.push("/wallet");
   };
 
   return (
@@ -91,6 +89,8 @@ export default function Home() {
           setIsWalletSuccess={setImportSuccess}
           privateKey={privateKey}
           setPrivateKey={setPrivateKey}
+          recover={recoverWithSeedPhrase}
+          setRecover={setRecoverWithSeedPhrase}
         />
       )}
 
@@ -100,18 +100,24 @@ export default function Home() {
           setImportSuccess={setImportSuccess}
           privateKey={privateKey}
           setPrivateKey={setPrivateKey}
+          recover={recoverWithPrivateKey}
+          setRecover={setRecoverWithPrivateKey}
         />
       )}
 
-      {importSuccess && (
+      {importSuccess && !congratulations && (
         <Password
           password={password}
           setPassword={setPassword}
           verifyPassword={verifyPassword}
           setVerifyPassword={setVerifyPassword}
           setCookie={setCookie}
+          wallet={importSuccess}
+          setWallet={setImportSuccess}
         />
       )}
+
+      {congratulations && <Congratulations />}
     </div>
   );
 }

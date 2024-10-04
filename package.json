@@ -15,6 +15,7 @@
     "@solana/web3.js": "^1.95.3",
     "@types/crypto-js": "^4.2.2",
     "@types/js-cookie": "^3.0.6",
+    "axios": "^1.7.7",
     "bip32": "^5.0.0-rc.0",
     "bip39": "^3.1.0",
     "bs58": "^6.0.0",
