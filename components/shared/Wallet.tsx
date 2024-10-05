@@ -9,12 +9,14 @@ interface WalletProps {
   balance: number;
   solanaLivePrice: number;
   setShowQR: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsSendTransaction: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const Wallet: React.FC<WalletProps> = ({
   balance,
   solanaLivePrice,
   setShowQR,
+  setIsSendTransaction,
 }) => {
   return (
     <div className="min-h-[480px]">
@@ -38,7 +40,10 @@ export const Wallet: React.FC<WalletProps> = ({
       </div>
 
       <div className="w-[250px] grid grid-cols-3 gap-1 m-auto mb-4">
-        <div className="flex flex-col items-center">
+        <div
+          onClick={() => setIsSendTransaction(true)}
+          className="flex flex-col items-center"
+        >
           <button className="w-[60px] h-[43px] bg-[#3A5D94]/30 rounded-xl flex justify-center items-center mt-4 focus:outline-none hover:bg-[#030811] transition duration-200">
             <Image src={SendIcon} width={38} height={30} alt="Send Icon" />
           </button>

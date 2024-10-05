@@ -27,7 +27,7 @@ export const Receive: React.FC<ReceiveProps> = ({
       <Button
         onClick={() => setShowQR(false)}
         variant="destructive"
-        className="absolute top-3 right-3"
+        className="absolute h-9 w-9 top-3 right-3 rounded-full"
       >
         X
       </Button>

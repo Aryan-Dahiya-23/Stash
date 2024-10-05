@@ -89,6 +89,8 @@ export default function Home() {
           setIsWalletSuccess={setIsWalletSuccess}
           privateKey={privateKey}
           setPrivateKey={setPrivateKey}
+          recover={false}
+          setRecover={() => {}}
         />
       )}
 
@@ -99,6 +101,8 @@ export default function Home() {
           verifyPassword={verifyPassword}
           setVerifyPassword={setVerifyPassword}
           setCookie={setCookie}
+          wallet={false}
+          setWallet={() => {}}
         />
       )}
 

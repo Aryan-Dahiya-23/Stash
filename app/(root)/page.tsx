@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import stash from "../../public/assets/solana_icon.svg";
+import stash from "../../public/assets/solana-logo.png";
 import Link from "next/link";
 
 export default function Home() {

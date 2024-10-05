@@ -119,24 +119,37 @@ export const SeedPhrase: React.FC<SeedPhraseProps> = ({
   return (
     <>
       <div className="w-full text-center text-[#dde0e3] text-[25px] font-semibold mb-4 mt-14">
-        {pathname === "/import" ||
-          (!isWalletGenerated && (
-            <button
-              onClick={
-                pathname === "/import"
-                  ? () => setRecover(false)
-                  : () => router.push("/")
-              }
-              className="absolute top-2 left-2 focus:outline-none ml-2 mt-4"
-            >
-              <Image
-                src={BackArrowIcon}
-                width={30}
-                height={30}
-                alt="Back Arrow"
-              />
-            </button>
-          ))}
+        {pathname === "/import" && (
+          <button
+            onClick={
+              pathname === "/import"
+                ? () => setRecover(false)
+                : () => router.push("/")
+            }
+            className="absolute top-2 left-2 focus:outline-none ml-2 mt-4"
+          >
+            <Image
+              src={BackArrowIcon}
+              width={30}
+              height={30}
+              alt="Back Arrow"
+            />
+          </button>
+        )}
+
+        {pathname === "/create" && !isWalletGenerated && (
+          <button
+            onClick={() => router.push("/")}
+            className="absolute top-2 left-2 focus:outline-none ml-2 mt-4"
+          >
+            <Image
+              src={BackArrowIcon}
+              width={30}
+              height={30}
+              alt="Back Arrow"
+            />
+          </button>
+        )}
 
         <div>
           {pathname === "/import"

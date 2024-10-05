@@ -21,6 +21,7 @@ import { Receive } from "@/components/shared/Receive";
 import { Header } from "@/components/shared/Header";
 import { Footer } from "@/components/shared/Footer";
 import { Wallet } from "@/components/shared/Wallet";
+import { SendToken } from "@/components/shared/SendToken";
 
 interface Wallet {
   publicKey: string;
@@ -35,7 +36,10 @@ export default function Home() {
   const [receiverAddress, setReceiverAddress] = useState<string>("");
   const [solanaAmount, setSolanaAmount] = useState<string>("");
   const [successful, setSuccessful] = useState<number>(0);
+  const [isSendTransaction, setIsSendTransaction] = useState<boolean>(false);
   const [isTransactionPending, setIsTransactionPending] =
+    useState<boolean>(false);
+  const [isTransactionDone, setIsSendTransactionDone] =
     useState<boolean>(false);
   const [showQR, setShowQR] = useState<boolean>(false);
   const [wallet, setWallet] = useState<Wallet | null>(null);
@@ -74,6 +78,21 @@ export default function Home() {
   };
 
   const sendTransaction = async () => {
+    try {
+      new PublicKey(wallet?.publicKey ?? "");
+    } catch (error) {
+      toast.error("Invalid Public Key");
+      return;
+    }
+    if (!parseFloat(solanaAmount)) {
+      toast.error("Enter Valid Amount");
+      return;
+    }
+    if (parseFloat(solanaAmount) > balance) {
+      toast.error("Not enough balance!");
+      return;
+    }
+
     setIsTransactionPending(true);
     const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
     const transaction = new Transaction();
@@ -87,28 +106,23 @@ export default function Home() {
     );
 
     const privateKeyHex = wallet?.privateKey ?? "";
-    console.log(privateKeyHex);
-
     const secretKey = Uint8Array.from(Buffer.from(privateKeyHex, "hex"));
-    console.log(secretKey);
-
     const solanaKeypair = Keypair.fromSecretKey(secretKey);
-    console.log(solanaKeypair);
 
-    console.log("Public Key:", solanaKeypair.publicKey.toBase58());
-    console.log(
-      "Private Key:",
-      Buffer.from(solanaKeypair.secretKey).toString("hex")
-    );
-
-    const signature = await sendAndConfirmTransaction(connection, transaction, [
-      solanaKeypair,
-    ]);
+    try {
+      const signature = await sendAndConfirmTransaction(
+        connection,
+        transaction,
+        [solanaKeypair]
+      );
+      setIsSendTransactionDone(true);
+    } catch (error) {
+      toast.error("There was something wrong with the transaction. Try again!");
+      setIsTransactionPending(false);
+    }
 
     setSuccessful(successful + 1);
-
     setIsTransactionPending(false);
-    setReceiverAddress("");
     setSolanaAmount("");
   };
 
@@ -154,21 +168,35 @@ export default function Home() {
       <Header
         publicKey={wallet ? wallet.publicKey : ""}
         copyAddress={copyAddress}
+        logout={logout}
       />
       <div className="w-[360px] border border-[#5f5f5f46] mt-3"></div>
 
       {showQR ? (
         <Receive
-          publicKey={wallet ? wallet.publicKey : ""}
+          publicKey={wallet?.publicKey || ""}
           copyAddress={copyAddress}
           showQR={showQR}
           setShowQR={setShowQR}
+        />
+      ) : isSendTransaction ? (
+        <SendToken
+          receiverAddress={receiverAddress}
+          setReceiverAddress={setReceiverAddress}
+          solanaAmount={solanaAmount}
+          setSolanaAmount={setSolanaAmount}
+          isTransactionPending={isTransactionPending}
+          setIsSendTransaction={setIsSendTransaction}
+          isTransactionDone={isTransactionDone}
+          setIsSendTransactionDone={setIsSendTransactionDone}
+          sendTransaction={sendTransaction}
         />
       ) : (
         <Wallet
           balance={balance}
           solanaLivePrice={solanaLivePrice}
           setShowQR={setShowQR}
+          setIsSendTransaction={setIsSendTransaction}
         />
       )}
 
