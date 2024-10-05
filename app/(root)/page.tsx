@@ -1,13 +1,21 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import stash from "../../public/assets/solana-logo.png";
 import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import StashIcon from "../../public/assets/stash-logo.png";
+import StashText from "../../public/assets/stash-text.png";
 
 export default function Home() {
   return (
     <div className="flex flex-col justify-center items-center space-y-10 px-5 py-16">
-      <Image src={stash} width={175} height={175} alt="Picture of the Icon" />
+      <Image src={StashIcon} width={95} height={130} alt="Stash Icon" />
+      <Image
+        width={160}
+        height={20}
+        className="mt-7 ml-2"
+        src={StashText}
+        alt="Stash Text"
+      />
 
       <span className="text-center px-4 text-[16px]">
         To get started, create a new wallet or import an existing one.
