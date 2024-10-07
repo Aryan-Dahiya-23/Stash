@@ -4,6 +4,9 @@ import SendIcon from "../../public/assets/send-icon.png";
 import ReceiveIcon from "../../public/assets/receive-icon.png";
 import BuyIcon from "../../public/assets/buy-icon.png";
 import SolanaLogoIcon from "../../public/assets/solana-logo.png";
+import TetherIcon from "../../public/assets/tether-icon.png";
+import JupiterIcon from "../../public/assets/jupiter-logo.png";
+import WifIcon from "../../public/assets/wif_icon.png";
 
 interface WalletProps {
   balance: number;
@@ -28,7 +31,7 @@ export const Wallet: React.FC<WalletProps> = ({
         )}
       </div>
 
-      <div className="flex justify-center gap-3 mt-1">
+      {/* <div className="flex justify-center gap-3 mt-1">
         <div className="flex flex-col items-center text-[#6DFE8D] text-[13px] font-semibold mt-[2px]">
           <div>+ $ 343.2</div>
         </div>
@@ -37,9 +40,9 @@ export const Wallet: React.FC<WalletProps> = ({
             <div>+ 14.65%</div>
           </div>
         </button>
-      </div>
+      </div> */}
 
-      <div className="w-[250px] grid grid-cols-3 gap-1 m-auto mb-4">
+      <div className="w-[250px] grid grid-cols-3 gap-1 m-auto mb-6 mt-2">
         <div
           onClick={() => setIsSendTransaction(true)}
           className="flex flex-col items-center"
@@ -102,49 +105,55 @@ export const Wallet: React.FC<WalletProps> = ({
       </button>
 
       <button className="w-[330px] h-[60px] mt-3 bg-[#03080F]/40 rounded-[15px] flex items-center transition duration-300 ease-in-out hover:bg-[#0A1527] p-2">
-        <img
-          src="./assets/tether-icon.png"
-          alt="USDT Icon"
-          className="w-[36px] h-[36px] ml-4"
+        <Image
+          src={TetherIcon}
+          className="ml-4"
+          height={36}
+          width={36}
+          alt="Tether Icon"
         />
         <div className="flex flex-col justify-start ml-6">
           <span className="text-white text-[15px] font-semibold text-left">
             USDT
           </span>
           <span className="text-[#727171] text-[12px] font-semibold text-left">
-            1545.45 USDT
+            0 USDT
           </span>
         </div>
       </button>
 
       <button className="w-[330px] h-[60px] mt-3 bg-[#03080F]/40 rounded-[15px] flex items-center transition duration-300 ease-in-out hover:bg-[#0A1527] p-2">
-        <img
-          src="./assets/jupiter-logo.png"
+        <Image
+          src={JupiterIcon}
+          className="ml-[13px]"
+          height={42}
+          width={42}
           alt="Jupiter Icon"
-          className="w-[42px] h-[42px] ml-[13px]"
         />
         <div className="flex flex-col justify-start ml-6">
           <span className="text-white text-[15px] font-semibold text-left">
             Jupiter
           </span>
           <span className="text-[#727171] text-[12px] font-semibold text-left">
-            91.45 JUP
+            0 JUP
           </span>
         </div>
       </button>
 
       <button className="w-[330px] h-[60px] mt-3 bg-[#03080f]/40 rounded-[15px] flex items-center transition duration-300 ease-in-out hover:bg-[#0A1527] p-2">
-        <img
-          src="./assets/wif_icon.png"
+        <Image
+          src={WifIcon}
+          className="ml-[13px]"
+          height={42}
+          width={42}
           alt="WIF Icon"
-          className="w-[42px] h-[42px] ml-[13px]"
         />
         <div className="flex flex-col justify-start ml-6">
           <span className="text-white text-[15px] font-semibold text-left">
             WIF
           </span>
           <span className="text-[#727171] text-[12px] font-semibold text-left">
-            9134.21 WIF
+            0 WIF
           </span>
         </div>
       </button>

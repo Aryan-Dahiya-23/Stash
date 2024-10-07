@@ -35,7 +35,8 @@ export const Password: React.FC<PasswordProps> = ({
       toast("Passwords don't match!", {
         icon: "❌",
       });
-      console.log("clicked");
+    } else if (password.length < 5) {
+      toast.error("Password should be of minimum 5 characters");
     } else {
       setCookie();
     }
@@ -46,6 +47,7 @@ export const Password: React.FC<PasswordProps> = ({
     toast("Wallet successfully reset", {
       icon: "✅",
     });
+    router.refresh();
     router.push("/");
   };
 

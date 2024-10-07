@@ -60,7 +60,6 @@ export const SendToken: React.FC<SendTokenProps> = ({
               className="mt-4 mb-7"
               alt="Wallet Icon"
             />
-
             <div className="w-[260px] h-[43px] bg-[#3A5D94]/30 rounded-xl flex justify-center items-center focus:outline-none hover:bg-[#030c1b] transition duration-200">
               <input
                 type="text"
@@ -72,9 +71,7 @@ export const SendToken: React.FC<SendTokenProps> = ({
                 placeholder="Receiver address / username"
               />
             </div>
-
             <div className="mt-5"></div>
-
             <div className="w-[260px] h-[43px] bg-[#3A5D94]/30 rounded-xl flex justify-center items-center focus:outline-none hover:bg-[#030c1b] transition duration-200">
               <input
                 type="text"

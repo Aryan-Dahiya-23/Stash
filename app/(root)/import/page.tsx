@@ -11,7 +11,6 @@ import { ImportWallet } from "@/components/shared/ImportWallet";
 import { SeedPhrase } from "@/components/shared/SeedPhrase";
 import { PrivateKey } from "@/components/shared/PrivateKey";
 import { Password } from "@/components/shared/Password";
-import toast from "react-hot-toast";
 import { Congratulations } from "@/components/shared/Congratulations";
 
 export default function Home() {

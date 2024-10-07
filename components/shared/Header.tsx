@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import Image from "next/image";
@@ -6,21 +7,38 @@ import { Skeleton } from "../ui/skeleton";
 import ProfileImageIcon from "../../public/assets/profile-picture.png";
 import DropDownIcon from "../../public/assets/drop-down icon.png";
 import SettingsIcon from "../../public/assets/settings-icon.png";
+import { useEffect, useState } from "react";
 
 interface HeaderProps {
   publicKey: string;
+  customName: string;
+  setNameGeneration: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowQR: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsSendTransaction: React.Dispatch<React.SetStateAction<boolean>>;
   copyAddress: () => void;
   logout: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   publicKey,
+  customName,
+  setNameGeneration,
+  setShowQR,
+  setIsSendTransaction,
   copyAddress,
   logout,
 }) => {
+  const refreshHome = () => {
+    setNameGeneration(false);
+    setShowQR(false);
+    setIsSendTransaction(false);
+  };
   return (
     <div className="w-full flex justify-center items-center text-[#DEE0E3] text-[14px] mt-6 relative">
-      <button className="flex justify-center items-center mr-1 focus:outline-none">
+      <button
+        onClick={refreshHome}
+        className="flex justify-center items-center mr-1 focus:outline-none"
+      >
         <Image
           src={ProfileImageIcon}
           width={26}
@@ -30,14 +48,20 @@ export const Header: React.FC<HeaderProps> = ({
       </button>
 
       <div onClick={copyAddress} className="mx-1 text-sm hover:cursor-pointer">
-        {publicKey ? (
+        {customName.length > 0 ? (
+          customName
+        ) : publicKey.length > 0 ? (
           `${publicKey.slice(0, 3)}...${publicKey.slice(-3)}`
         ) : (
           <Skeleton className="h-4 w-[70px]" />
         )}
       </div>
 
-      <button className="flex justify-center items-center ml-1 focus:outline-none">
+      <button
+        disabled={customName.length > 0}
+        onClick={() => setNameGeneration(true)}
+        className="flex justify-center items-center ml-1 focus:outline-none"
+      >
         <Image src={DropDownIcon} width={25} height={25} alt="Dropdown Icon" />
       </button>
 

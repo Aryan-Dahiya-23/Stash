@@ -6,11 +6,11 @@ import CryptoJS from "crypto-js";
 import * as bip39 from "bip39";
 import * as bip32 from "bip32";
 import { Buffer } from "buffer";
-import { Password } from "@/components/shared/Password";
 import { useRouter } from "next/navigation";
 import { Keypair } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import toast from "react-hot-toast";
+import { ImportPassword } from "@/components/shared/ImportPassword";
 
 export default function Home() {
   const router = useRouter();
@@ -139,14 +139,10 @@ export default function Home() {
 
   return (
     <div className="flex flex-col justify-center items-center">
-      <Password
+      <ImportPassword
         password={password}
         setPassword={setPassword}
-        verifyPassword={verifyPassword}
-        setVerifyPassword={setVerifyPassword}
         setCookie={setCookie}
-        wallet={false}
-        setWallet={() => {}}
       />
     </div>
   );

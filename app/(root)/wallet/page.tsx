@@ -22,6 +22,7 @@ import { Header } from "@/components/shared/Header";
 import { Footer } from "@/components/shared/Footer";
 import { Wallet } from "@/components/shared/Wallet";
 import { SendToken } from "@/components/shared/SendToken";
+import { NameGeneration } from "@/components/shared/NameGeneration";
 
 interface Wallet {
   publicKey: string;
@@ -36,6 +37,7 @@ export default function Home() {
   const [receiverAddress, setReceiverAddress] = useState<string>("");
   const [solanaAmount, setSolanaAmount] = useState<string>("");
   const [successful, setSuccessful] = useState<number>(0);
+  const [nameGeneration, setNameGeneration] = useState<boolean>(false);
   const [isSendTransaction, setIsSendTransaction] = useState<boolean>(false);
   const [isTransactionPending, setIsTransactionPending] =
     useState<boolean>(false);
@@ -43,10 +45,44 @@ export default function Home() {
     useState<boolean>(false);
   const [showQR, setShowQR] = useState<boolean>(false);
   const [wallet, setWallet] = useState<Wallet | null>(null);
+  const [customName, setCustomName] = useState<string>("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const privateKey = Cookies.get("privateKey") || "";
+
+      const getCustomName = async (publicKey: string) => {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/name/getCustomName?walletAddress=${encodeURIComponent(
+              publicKey
+            )}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Error fetching custom name:", errorData.error);
+            return;
+          }
+
+          const wallet = await response.json();
+
+          if (wallet && wallet.customName) {
+            console.log("Logging wallet:", wallet);
+            setCustomName(wallet.customName);
+          } else {
+            console.log("Custom name not found for this wallet");
+          }
+        } catch (error) {
+          console.error("Error during fetch:", error);
+        }
+      };
 
       if (privateKey) {
         try {
@@ -56,6 +92,7 @@ export default function Home() {
 
           setWallet({ publicKey, privateKey });
           getBalance();
+          getCustomName(publicKey);
         } catch (error) {
           router.push("/login");
         }
@@ -84,6 +121,50 @@ export default function Home() {
       toast.error("Invalid Public Key");
       return;
     }
+
+    let newReceiverAddress = "";
+    try {
+      if (receiverAddress && receiverAddress.endsWith("@solana")) {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/name/getWalletAddress?customName=${encodeURIComponent(
+              receiverAddress
+            )}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (response.status === 404) {
+            toast.error("Invalid wallet address");
+          }
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Error fetching wallet address:", errorData.error);
+            return;
+          }
+
+          const wallet = await response.json();
+
+          if (wallet && wallet.walletAddress) {
+            console.log("Logging wallet:", wallet);
+            setReceiverAddress(wallet.walletAddress);
+            newReceiverAddress = wallet.walletAddress;
+          } else {
+            console.log("Custom name not found for this wallet");
+          }
+        } catch (error) {
+          console.error("Error during fetch:", error);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
     if (!parseFloat(solanaAmount)) {
       toast.error("Enter Valid Amount");
       return;
@@ -100,7 +181,10 @@ export default function Home() {
     transaction.add(
       SystemProgram.transfer({
         fromPubkey: new PublicKey(wallet?.publicKey ?? ""),
-        toPubkey: new PublicKey(receiverAddress),
+        toPubkey:
+          newReceiverAddress.length > 0
+            ? new PublicKey(newReceiverAddress)
+            : new PublicKey(receiverAddress),
         lamports: parseFloat(solanaAmount) * LAMPORTS_PER_SOL,
       })
     );
@@ -141,7 +225,11 @@ export default function Home() {
   };
 
   const copyAddress = () => {
-    navigator.clipboard.writeText(wallet?.publicKey ?? "");
+    navigator.clipboard.writeText(
+      customName.length > 0 ? customName : wallet?.publicKey ?? ""
+    );
+
+    // navigator.clipboard.writeText(wallet?.publicKey ?? "");
     toast("Copied!", {
       icon: "📋",
     });
@@ -167,6 +255,10 @@ export default function Home() {
     <div className="h-[600px] relative flex flex-col items-center">
       <Header
         publicKey={wallet ? wallet.publicKey : ""}
+        customName={customName}
+        setNameGeneration={setNameGeneration}
+        setIsSendTransaction={setIsSendTransaction}
+        setShowQR={setShowQR}
         copyAddress={copyAddress}
         logout={logout}
       />
@@ -175,6 +267,7 @@ export default function Home() {
       {showQR ? (
         <Receive
           publicKey={wallet?.publicKey || ""}
+          customName={customName}
           copyAddress={copyAddress}
           showQR={showQR}
           setShowQR={setShowQR}
@@ -190,6 +283,13 @@ export default function Home() {
           isTransactionDone={isTransactionDone}
           setIsSendTransactionDone={setIsSendTransactionDone}
           sendTransaction={sendTransaction}
+        />
+      ) : nameGeneration ? (
+        <NameGeneration
+          walletAddress={wallet ? wallet.publicKey : ""}
+          customName={customName}
+          setCustomName={setCustomName}
+          setNameGeneration={setNameGeneration}
         />
       ) : (
         <Wallet

@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 interface ReceiveProps {
   publicKey: string;
   copyAddress: () => void;
+  customName: string;
   showQR: boolean;
   setShowQR: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -13,11 +14,16 @@ interface ReceiveProps {
 export const Receive: React.FC<ReceiveProps> = ({
   publicKey,
   copyAddress,
+  customName,
   showQR,
   setShowQR,
 }) => {
-  const copyWalletID = () => {
-    navigator.clipboard.writeText("xyz@solana");
+  const copyWallet = (type: string) => {
+    if (type === "walletID") {
+      navigator.clipboard.writeText(customName);
+    } else {
+      navigator.clipboard.writeText(publicKey);
+    }
     toast("Copied!", {
       icon: "📋",
     });
@@ -46,10 +52,12 @@ export const Receive: React.FC<ReceiveProps> = ({
         Your Wallet ID:
       </div>
       <div
-        onClick={copyWalletID}
+        onClick={() => copyWallet("walletID")}
         className="hover:cursor-pointer w-[260px] h-[43px] bg-[#3A5D94]/30 rounded-xl flex justify-center items-center focus:outline-none hover:bg-[#030c1b] transition duration-200"
       >
-        <div className="text-center text-[#DEE0E3] text-[15px]">xyz@solana</div>
+        <div className="text-center text-[#DEE0E3] text-[15px]">
+          {customName}
+        </div>
       </div>
 
       <div className="mt-5"></div>
@@ -58,7 +66,7 @@ export const Receive: React.FC<ReceiveProps> = ({
         Solana Wallet Address:
       </div>
       <div
-        onClick={() => copyAddress()}
+        onClick={() => copyWallet("walletAddress")}
         className="w-[260px] h-[43px] hover:cursor-pointer  bg-[#3A5D94]/30 rounded-xl flex justify-center items-center focus:outline-none hover:bg-[#030c1b] transition duration-200"
       >
         <div className="text-center text-[#DEE0E3] text-[15px]">
