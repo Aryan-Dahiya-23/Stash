@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+"use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -35,7 +36,11 @@ export const SeedPhrase: React.FC<SeedPhraseProps> = ({
 
   const [isWalletGenerated, setIsWalletGenerated] = useState<boolean>(false);
   const [seedWords, setSeedWords] = useState<string[]>(Array(12).fill(""));
-  const pathname = window.location.pathname;
+  const [pathname, setPathname] = useState<string>("");
+
+  useEffect(() => {
+    setPathname(window.location.pathname);
+  }, [router]);
 
   useEffect(() => {
     setMnemonic(seedWords.join(" "));
@@ -172,7 +177,7 @@ export const SeedPhrase: React.FC<SeedPhraseProps> = ({
             className="w-[100px] h-[43px] bg-[#0A1527] rounded-xl text-center text-[#dde0e3] text-[15px] font-bold"
             placeholder={`${index + 1}.`}
             value={word}
-            disabled={window.location.pathname === "/create"}
+            disabled={pathname === "/create"}
             onChange={(e) => handleInputChange(index, e.target.value)}
           />
         ))}
