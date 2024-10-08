@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import React from "react";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
 import { Check } from "lucide-react";
 import { Button } from "../ui/button";
 import SolanaLogo from "../../public/assets/solana-logo.png";
-import React from "react";
+import BackArrowIcon from "../../public/assets/back-arrow-icon.png";
 
 interface SendTokenProps {
   receiverAddress: string;
@@ -35,7 +36,7 @@ export const SendToken: React.FC<SendTokenProps> = ({
   return (
     <div className="min-h-[480px] ">
       <div className="relative w-[310px] h-[320px] mt-10 bg-[#03080f]/40 rounded-[15px] flex flex-col justify-center items-center">
-        <Button
+        {/* <Button
           disabled={isTransactionPending}
           onClick={() => {
             setIsSendTransaction(false);
@@ -46,7 +47,21 @@ export const SendToken: React.FC<SendTokenProps> = ({
           className="absolute h-8 w-8 top-2.5 right-2 rounded-full"
         >
           X
-        </Button>
+        </Button> */}
+
+        <Image
+          onClick={() => {
+            if (isTransactionPending) return;
+            setIsSendTransaction(false);
+            setIsSendTransactionDone(false);
+            setReceiverAddress("");
+          }}
+          className="absolute top-2.5 left-2.5 rounded-full hover:cursor-pointer"
+          src={BackArrowIcon}
+          width={30}
+          height={30}
+          alt="Back Arrow"
+        />
 
         {!isTransactionPending && !isTransactionDone && (
           <>

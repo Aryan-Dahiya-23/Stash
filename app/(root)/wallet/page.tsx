@@ -23,6 +23,8 @@ import { Footer } from "@/components/shared/Footer";
 import { Wallet } from "@/components/shared/Wallet";
 import { SendToken } from "@/components/shared/SendToken";
 import { NameGeneration } from "@/components/shared/NameGeneration";
+import { NFT } from "@/components/shared/NFT";
+import { Vault } from "@/components/shared/Vault";
 
 interface Wallet {
   publicKey: string;
@@ -46,6 +48,9 @@ export default function Home() {
   const [showQR, setShowQR] = useState<boolean>(false);
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const [customName, setCustomName] = useState<string>("");
+  const [showNFT, setShowNFT] = useState<boolean>(false);
+  const [showVault, setShowVault] = useState<boolean>(false);
+  const [showWallet, setShowWallet] = useState<boolean>(true);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -54,7 +59,9 @@ export default function Home() {
       const getCustomName = async (publicKey: string) => {
         try {
           const response = await fetch(
-            `http://localhost:3000/api/name/getCustomName?walletAddress=${encodeURIComponent(
+            `${
+              process.env.NEXT_PUBLIC_SERVER_URL
+            }/api/name/getCustomName?walletAddress=${encodeURIComponent(
               publicKey
             )}`,
             {
@@ -114,6 +121,15 @@ export default function Home() {
     );
   };
 
+  const isValidPublicKey = (key: string): boolean => {
+    try {
+      new PublicKey(key);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
   const sendTransaction = async () => {
     try {
       new PublicKey(wallet?.publicKey ?? "");
@@ -124,10 +140,12 @@ export default function Home() {
 
     let newReceiverAddress = "";
     try {
-      if (receiverAddress && receiverAddress.endsWith("@solana")) {
+      if (receiverAddress.length > 0 && receiverAddress.endsWith("@solana")) {
         try {
           const response = await fetch(
-            `http://localhost:3000/api/name/getWalletAddress?customName=${encodeURIComponent(
+            `${
+              process.env.NEXT_PUBLIC_SERVER_URL
+            }/api/name/getWalletAddress?customName=${encodeURIComponent(
               receiverAddress
             )}`,
             {
@@ -174,20 +192,25 @@ export default function Home() {
       return;
     }
 
-    setIsTransactionPending(true);
     const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
     const transaction = new Transaction();
 
-    transaction.add(
-      SystemProgram.transfer({
-        fromPubkey: new PublicKey(wallet?.publicKey ?? ""),
-        toPubkey:
-          newReceiverAddress.length > 0
-            ? new PublicKey(newReceiverAddress)
-            : new PublicKey(receiverAddress),
-        lamports: parseFloat(solanaAmount) * LAMPORTS_PER_SOL,
-      })
-    );
+    const pubkeyToValidate =
+      newReceiverAddress.length > 0 ? newReceiverAddress : receiverAddress;
+
+    if (isValidPublicKey(pubkeyToValidate)) {
+      setIsTransactionPending(true);
+      transaction.add(
+        SystemProgram.transfer({
+          fromPubkey: new PublicKey(wallet?.publicKey ?? ""),
+          toPubkey: new PublicKey(pubkeyToValidate),
+          lamports: parseFloat(solanaAmount) * LAMPORTS_PER_SOL,
+        })
+      );
+    } else {
+      toast.error("Invalid solana address");
+      return;
+    }
 
     const privateKeyHex = wallet?.privateKey ?? "";
     const secretKey = Uint8Array.from(Buffer.from(privateKeyHex, "hex"));
@@ -291,6 +314,10 @@ export default function Home() {
           setCustomName={setCustomName}
           setNameGeneration={setNameGeneration}
         />
+      ) : showNFT ? (
+        <NFT />
+      ) : showVault ? (
+        <Vault />
       ) : (
         <Wallet
           balance={balance}
@@ -300,7 +327,14 @@ export default function Home() {
         />
       )}
 
-      <Footer />
+      <Footer
+        showWallet={showWallet}
+        setShowWallet={setShowWallet}
+        showNFT={showNFT}
+        setShowNFT={setShowNFT}
+        showVault={showVault}
+        setShowVault={setShowVault}
+      />
     </div>
   );
 }

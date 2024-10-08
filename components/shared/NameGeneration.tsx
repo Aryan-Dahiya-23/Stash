@@ -51,7 +51,7 @@ export const NameGeneration: React.FC<NameGenerationProps> = ({
 
     try {
       const response = await fetch(
-        "http://localhost:3000/api/name/createName",
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/name/createName`,
         {
           method: "POST",
           headers: {

@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import Image from "next/image";
 import toast from "react-hot-toast";
 import QRCode from "react-qr-code";
 import { Button } from "../ui/button";
+import BackArrowIcon from "../../public/assets/back-arrow-icon.png";
 
 interface ReceiveProps {
   publicKey: string;
@@ -30,13 +32,22 @@ export const Receive: React.FC<ReceiveProps> = ({
   };
   return (
     <div className="w-[310px] relative min-h-[460px] mt-5 bg-[#03080f]/40 rounded-[15px] flex flex-col justify-center items-center">
-      <Button
+      {/* <Button
         onClick={() => setShowQR(false)}
         variant="destructive"
         className="absolute h-9 w-9 top-3 right-3 rounded-full"
       >
         X
-      </Button>
+      </Button> */}
+
+      <Image
+        onClick={() => setShowQR(false)}
+        className="absolute top-3 left-3 rounded-full hover:cursor-pointer"
+        src={BackArrowIcon}
+        width={30}
+        height={30}
+        alt="Back Arrow"
+      />
 
       <div className="text-center text-[#DEE0E3] text-[20px] font-semibold">
         Receive Address
