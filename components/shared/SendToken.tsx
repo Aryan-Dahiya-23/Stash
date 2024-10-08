@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
+import Cookies from "js-cookie";
+import CryptoJS from "crypto-js";
 import { Loader2 } from "lucide-react";
 import { Check } from "lucide-react";
 import { Button } from "../ui/button";
 import SolanaLogo from "../../public/assets/solana-logo.png";
 import BackArrowIcon from "../../public/assets/back-arrow-icon.png";
+import toast from "react-hot-toast";
 
 interface SendTokenProps {
   receiverAddress: string;
@@ -30,15 +33,43 @@ export const SendToken: React.FC<SendTokenProps> = ({
   setIsSendTransactionDone,
   sendTransaction,
 }) => {
+  const [password, setPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  const matchPassword = () => {
+    let decryptedData = "";
+    try {
+      const decrypted = CryptoJS.AES.decrypt(
+        Cookies.get("encryptedData") || "",
+        password
+      );
+      decryptedData = decrypted.toString(CryptoJS.enc.Utf8);
+
+      if (!decryptedData) {
+        toast.error("Invalid Password");
+        return;
+      } else {
+        sendTransaction();
+        // toast.success("correct password");
+      }
+    } catch (error) {
+      toast.error("Invalid Password");
+      return;
+    }
+  };
   return (
     <div className="min-h-[480px] ">
       <div className="relative w-[310px] h-[320px] mt-10 bg-[#03080f]/40 rounded-[15px] flex flex-col justify-center items-center">
         <Image
           onClick={() => {
             if (isTransactionPending) return;
-            setIsSendTransaction(false);
-            setIsSendTransactionDone(false);
-            setReceiverAddress("");
+            if (showPassword && !isTransactionPending && !isTransactionDone) {
+              setShowPassword(false);
+            } else {
+              setIsSendTransaction(false);
+              setIsSendTransactionDone(false);
+              setReceiverAddress("");
+            }
           }}
           className="absolute top-2.5 left-2.5 rounded-full hover:cursor-pointer"
           src={BackArrowIcon}
@@ -56,30 +87,46 @@ export const SendToken: React.FC<SendTokenProps> = ({
               src={SolanaLogo}
               height={80}
               width={140}
-              className="mt-4 mb-7"
+              className={`mt-4 ${showPassword ? "mb-[51px]" : "mb-[28px]"} `}
               alt="Wallet Icon"
             />
-            <div className="w-[260px] h-[43px] bg-[#3A5D94]/30 rounded-xl flex justify-center items-center focus:outline-none hover:bg-[#030c1b] transition duration-200">
-              <input
-                type="text"
-                value={receiverAddress}
-                onChange={(e) => {
-                  setReceiverAddress(e.target.value);
-                }}
-                className="w-full h-full bg-transparent text-left pl-4 pr-10 text-[#ffffff] text-[15px] placeholder-[#CECECE] outline-none"
-                placeholder="Receiver address / username"
-              />
-            </div>
-            <div className="mt-5"></div>
-            <div className="w-[260px] h-[43px] bg-[#3A5D94]/30 rounded-xl flex justify-center items-center focus:outline-none hover:bg-[#030c1b] transition duration-200">
-              <input
-                type="text"
-                value={solanaAmount}
-                onChange={(e) => setSolanaAmount(e.target.value)}
-                className="w-full h-full bg-transparent text-left pl-4 pr-10 text-[#ffffff] text-[15px] placeholder-[#CECECE] outline-none"
-                placeholder="Amount (SOL)"
-              />
-            </div>
+            {showPassword ? (
+              <div className="w-[260px] mb-[40px] h-[43px] bg-[#3A5D94]/30 rounded-xl flex justify-center items-center focus:outline-none hover:bg-[#030c1b] transition duration-200">
+                <input
+                  type="text"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
+                  className="w-full h-full bg-transparent text-left pl-4 pr-10 text-[#ffffff] text-[15px] placeholder-[#CECECE] outline-none"
+                  placeholder="Enter your wallet password"
+                />
+              </div>
+            ) : (
+              <>
+                <div className="w-[260px] h-[43px] bg-[#3A5D94]/30 rounded-xl flex justify-center items-center focus:outline-none hover:bg-[#030c1b] transition duration-200">
+                  <input
+                    type="text"
+                    value={receiverAddress}
+                    onChange={(e) => {
+                      setReceiverAddress(e.target.value);
+                    }}
+                    className="w-full h-full bg-transparent text-left pl-4 pr-10 text-[#ffffff] text-[15px] placeholder-[#CECECE] outline-none"
+                    placeholder="Receiver address / username"
+                  />
+                </div>
+                <div className="mt-5"></div>
+                <div className="w-[260px] h-[43px] bg-[#3A5D94]/30 rounded-xl flex justify-center items-center focus:outline-none hover:bg-[#030c1b] transition duration-200">
+                  <input
+                    type="text"
+                    value={solanaAmount}
+                    onChange={(e) => setSolanaAmount(e.target.value)}
+                    className="w-full h-full bg-transparent text-left pl-4 pr-10 text-[#ffffff] text-[15px] placeholder-[#CECECE] outline-none"
+                    placeholder="Amount (SOL)"
+                  />
+                </div>
+              </>
+            )}
           </>
         )}
 
@@ -108,22 +155,23 @@ export const SendToken: React.FC<SendTokenProps> = ({
         )}
       </div>
 
-      {!isTransactionPending && !isTransactionDone && (
+      {showPassword && !isTransactionPending && !isTransactionDone && (
         <Button
           disabled={receiverAddress === "" || solanaAmount === ""}
-          onClick={() => sendTransaction()}
+          onClick={matchPassword}
           className="w-[300px] h-[50px] mt-6 rounded-[15px]  bg-[#0A1527] flex justify-center items-center transition duration-300 ease-in-out hover:bg-[#0c192e]"
         >
-          {isTransactionPending ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin text-white" />
-              <span className="text-white text-[15px] font-semibold">
-                Sending
-              </span>
-            </>
-          ) : (
-            <span className="text-white text-[15px] font-semibold">Send</span>
-          )}
+          <span className="text-white text-[15px] font-semibold">Send</span>
+        </Button>
+      )}
+
+      {!showPassword && !isTransactionPending && !isTransactionDone && (
+        <Button
+          disabled={receiverAddress === "" || solanaAmount === ""}
+          onClick={() => setShowPassword(true)}
+          className="w-[300px] h-[50px] mt-6 rounded-[15px]  bg-[#0A1527] flex justify-center items-center transition duration-300 ease-in-out hover:bg-[#0c192e]"
+        >
+          <span className="text-white text-[15px] font-semibold">Next</span>
         </Button>
       )}
     </div>

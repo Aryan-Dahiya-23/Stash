@@ -4,7 +4,6 @@ import { useState } from "react";
 import Cookies from "js-cookie";
 import CryptoJS from "crypto-js";
 import * as bip39 from "bip39";
-import * as bip32 from "bip32";
 import { Buffer } from "buffer";
 import { useRouter } from "next/navigation";
 import { Keypair } from "@solana/web3.js";

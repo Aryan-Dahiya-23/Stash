@@ -252,7 +252,6 @@ export default function Home() {
       customName.length > 0 ? customName : wallet?.publicKey ?? ""
     );
 
-    // navigator.clipboard.writeText(wallet?.publicKey ?? "");
     toast("Copied!", {
       icon: "📋",
     });
