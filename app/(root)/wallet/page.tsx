@@ -334,6 +334,9 @@ export default function Home() {
         setShowNFT={setShowNFT}
         showVault={showVault}
         setShowVault={setShowVault}
+        setIsSendTransaction={setIsSendTransaction}
+        setIsSendTransactionDone={setIsSendTransactionDone}
+        setShowQR={setShowQR}
       />
     </div>
   );

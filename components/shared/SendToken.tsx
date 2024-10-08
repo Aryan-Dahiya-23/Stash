@@ -30,25 +30,9 @@ export const SendToken: React.FC<SendTokenProps> = ({
   setIsSendTransactionDone,
   sendTransaction,
 }) => {
-  const temp = async () => {
-    sendTransaction();
-  };
   return (
     <div className="min-h-[480px] ">
       <div className="relative w-[310px] h-[320px] mt-10 bg-[#03080f]/40 rounded-[15px] flex flex-col justify-center items-center">
-        {/* <Button
-          disabled={isTransactionPending}
-          onClick={() => {
-            setIsSendTransaction(false);
-            setIsSendTransactionDone(false);
-            setReceiverAddress("");
-          }}
-          variant="destructive"
-          className="absolute h-8 w-8 top-2.5 right-2 rounded-full"
-        >
-          X
-        </Button> */}
-
         <Image
           onClick={() => {
             if (isTransactionPending) return;

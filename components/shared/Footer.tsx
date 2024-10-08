@@ -6,6 +6,7 @@ import NFTIcon from "../../public/assets/nft-icon.png";
 import ClickedNFTIcon from "../../public/assets/nft-onclick-icon.png";
 import VaultIcon from "../../public/assets/vault-icon.png";
 import ClickedVaultIcon from "../../public/assets/vault-onclick-icon.png";
+import TransactionIcon from "../../public/assets/transaction-icon.png";
 
 interface FooterProps {
   showNFT: boolean;
@@ -14,6 +15,9 @@ interface FooterProps {
   setShowVault: React.Dispatch<React.SetStateAction<boolean>>;
   showWallet: boolean;
   setShowWallet: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsSendTransaction: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsSendTransactionDone: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowQR: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -23,6 +27,9 @@ export const Footer: React.FC<FooterProps> = ({
   setShowVault,
   showWallet,
   setShowWallet,
+  setIsSendTransaction,
+  setIsSendTransactionDone,
+  setShowQR,
 }) => {
   return (
     <div
@@ -48,6 +55,9 @@ export const Footer: React.FC<FooterProps> = ({
           onClick={() => {
             setShowVault(false);
             setShowWallet(false);
+            setIsSendTransaction(false);
+            setIsSendTransactionDone(false);
+            setShowQR(false);
             setShowNFT(true);
           }}
           className="flex justify-center items-center w-full"
@@ -68,16 +78,20 @@ export const Footer: React.FC<FooterProps> = ({
           />
         </button>
         <button className="flex justify-center items-center w-full">
-          <img
-            src="./assets/transaction-icon.png"
-            alt="Icon 4"
-            className="w-[30px] h-[30px]"
+          <Image
+            src={TransactionIcon}
+            height={30}
+            width={30}
+            alt="Transaction Icon"
           />
         </button>
         <button
           onClick={() => {
             setShowWallet(false);
             setShowNFT(false);
+            setIsSendTransaction(false);
+            setIsSendTransactionDone(false);
+            setShowQR(false);
             setShowVault(true);
           }}
           className="flex justify-center items-center w-full"
