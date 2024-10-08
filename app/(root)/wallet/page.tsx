@@ -25,6 +25,7 @@ import { SendToken } from "@/components/shared/SendToken";
 import { NameGeneration } from "@/components/shared/NameGeneration";
 import { NFT } from "@/components/shared/NFT";
 import { Vault } from "@/components/shared/Vault";
+import { SwapTokens } from "@/components/shared/SwapTokens";
 
 interface Wallet {
   publicKey: string;
@@ -51,6 +52,7 @@ export default function Home() {
   const [showNFT, setShowNFT] = useState<boolean>(false);
   const [showVault, setShowVault] = useState<boolean>(false);
   const [showWallet, setShowWallet] = useState<boolean>(true);
+  const [swapTokens, setSwapTokens] = useState<boolean>(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -278,6 +280,7 @@ export default function Home() {
       <Header
         publicKey={wallet ? wallet.publicKey : ""}
         customName={customName}
+        nameGeneration={nameGeneration}
         setNameGeneration={setNameGeneration}
         setIsSendTransaction={setIsSendTransaction}
         setShowQR={setShowQR}
@@ -317,6 +320,8 @@ export default function Home() {
         <NFT />
       ) : showVault ? (
         <Vault />
+      ) : swapTokens ? (
+        <SwapTokens />
       ) : (
         <Wallet
           balance={balance}
@@ -336,6 +341,9 @@ export default function Home() {
         setIsSendTransaction={setIsSendTransaction}
         setIsSendTransactionDone={setIsSendTransactionDone}
         setShowQR={setShowQR}
+        swapTokens={swapTokens}
+        setSwapTokens={setSwapTokens}
+        setNameGeneration={setNameGeneration}
       />
     </div>
   );

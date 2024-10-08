@@ -2,6 +2,7 @@ import Image from "next/image";
 import HomeIcon from "../../public/assets/home-page-icon.png";
 import ClickedHomeIcon from "../../public/assets/home-page-onclick-icon.png";
 import SwapTokenIcon from "../../public/assets/swap-icon.png";
+import ClickedSwapTokens from "../../public/assets/swap-onclick-icon.png";
 import NFTIcon from "../../public/assets/nft-icon.png";
 import ClickedNFTIcon from "../../public/assets/nft-onclick-icon.png";
 import VaultIcon from "../../public/assets/vault-icon.png";
@@ -18,6 +19,9 @@ interface FooterProps {
   setIsSendTransaction: React.Dispatch<React.SetStateAction<boolean>>;
   setIsSendTransactionDone: React.Dispatch<React.SetStateAction<boolean>>;
   setShowQR: React.Dispatch<React.SetStateAction<boolean>>;
+  swapTokens: boolean;
+  setSwapTokens: React.Dispatch<React.SetStateAction<boolean>>;
+  setNameGeneration: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -30,6 +34,9 @@ export const Footer: React.FC<FooterProps> = ({
   setIsSendTransaction,
   setIsSendTransactionDone,
   setShowQR,
+  swapTokens,
+  setSwapTokens,
+  setNameGeneration,
 }) => {
   return (
     <div
@@ -40,6 +47,8 @@ export const Footer: React.FC<FooterProps> = ({
           onClick={() => {
             setShowNFT(false);
             setShowVault(false);
+            setSwapTokens(false);
+            setNameGeneration(false);
             setShowWallet(true);
           }}
           className="flex justify-center items-center w-full"
@@ -58,6 +67,8 @@ export const Footer: React.FC<FooterProps> = ({
             setIsSendTransaction(false);
             setIsSendTransactionDone(false);
             setShowQR(false);
+            setSwapTokens(false);
+            setNameGeneration(false);
             setShowNFT(true);
           }}
           className="flex justify-center items-center w-full"
@@ -69,9 +80,21 @@ export const Footer: React.FC<FooterProps> = ({
             alt="NFT Icon"
           />
         </button>
-        <button className="flex justify-center items-center w-full">
+        <button
+          onClick={() => {
+            setShowWallet(false);
+            setShowNFT(false);
+            setIsSendTransaction(false);
+            setIsSendTransactionDone(false);
+            setShowQR(false);
+            setShowVault(false);
+            setNameGeneration(false);
+            setSwapTokens(true);
+          }}
+          className="flex justify-center items-center w-full"
+        >
           <Image
-            src={SwapTokenIcon}
+            src={swapTokens ? ClickedSwapTokens : SwapTokenIcon}
             height={30}
             width={30}
             alt="Swap Token Icon"
@@ -92,6 +115,8 @@ export const Footer: React.FC<FooterProps> = ({
             setIsSendTransaction(false);
             setIsSendTransactionDone(false);
             setShowQR(false);
+            setSwapTokens(false);
+            setNameGeneration(false);
             setShowVault(true);
           }}
           className="flex justify-center items-center w-full"

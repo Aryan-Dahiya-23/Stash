@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 interface HeaderProps {
   publicKey: string;
   customName: string;
+  nameGeneration: boolean;
   setNameGeneration: React.Dispatch<React.SetStateAction<boolean>>;
   setShowQR: React.Dispatch<React.SetStateAction<boolean>>;
   setIsSendTransaction: React.Dispatch<React.SetStateAction<boolean>>;
@@ -22,6 +23,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   publicKey,
   customName,
+  nameGeneration,
   setNameGeneration,
   setShowQR,
   setIsSendTransaction,
@@ -59,7 +61,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       <button
         disabled={customName.length > 0}
-        onClick={() => setNameGeneration(true)}
+        onClick={() => setNameGeneration(!nameGeneration)}
         className="flex justify-center items-center ml-1 focus:outline-none"
       >
         <Image src={DropDownIcon} width={25} height={25} alt="Dropdown Icon" />

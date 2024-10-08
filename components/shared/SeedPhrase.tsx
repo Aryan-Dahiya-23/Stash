@@ -183,11 +183,25 @@ export const SeedPhrase: React.FC<SeedPhraseProps> = ({
         ))}
       </div>
 
+      {pathname === "/create" && mnemonic.length > 11 && (
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(mnemonic);
+            toast.success("Copied");
+          }}
+          className="w-[300px] h-[50px] mt-3 bg-[#405983] rounded-[15px] flex justify-center items-center transition duration-300 ease-in-out hover:bg-[#5c749e]"
+        >
+          <span className="text-white text-[15px] font-semibold">
+            Copy seed phrase
+          </span>
+        </button>
+      )}
+
       {pathname === "/create" &&
         (mnemonic.length === 11 ? (
           <button
             onClick={generateWallet}
-            className="w-[300px] h-[50px] mt-9 bg-[#6782B1] rounded-[15px] flex justify-center items-center transition duration-300 ease-in-out hover:bg-[#5c749e]"
+            className="w-[300px] h-[50px] mt-4 bg-[#6782B1] rounded-[15px] flex justify-center items-center transition duration-300 ease-in-out hover:bg-[#5c749e]"
           >
             <span className="text-white text-[15px] font-semibold">
               Generate
@@ -196,7 +210,7 @@ export const SeedPhrase: React.FC<SeedPhraseProps> = ({
         ) : (
           <button
             onClick={() => setIsWalletSuccess(true)}
-            className="w-[300px] h-[50px] mt-9 bg-[#6782B1] rounded-[15px] flex justify-center items-center transition duration-300 ease-in-out hover:bg-[#5c749e]"
+            className="w-[300px] h-[50px] mt-4 bg-[#6782B1] rounded-[15px] flex justify-center items-center transition duration-300 ease-in-out hover:bg-[#5c749e]"
           >
             <span className="text-white text-[15px] font-semibold">
               Continue

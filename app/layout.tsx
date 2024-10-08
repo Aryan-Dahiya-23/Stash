@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${instrumentSans.className} h-screen flex justify-center items-center antialiased`}
+        className={`${instrumentSans.className} bg-[#DBEBFF] h-screen flex justify-center items-center antialiased`}
       >
         <ThemeProvider
           attribute="class"
