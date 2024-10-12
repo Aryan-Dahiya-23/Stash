@@ -1,4 +1,4 @@
-<img src = "https://github.com/Aryan-Dahiya-23/Stash/blob/main/public/assets/Frame%20(16).png?raw=true" />
+<img src = "https://github.com/Aryan-Dahiya-23/Stash/blob/main/public/assets/stash%20image.png?raw=true" />
 
 # Stash Wallet
 
