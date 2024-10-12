@@ -2,7 +2,7 @@
 
 # Stash Wallet
 
-Stash Wallet is a self-custody crypto wallet built using Solana Web3.js, designed to provide a seamless and user-friendly experience for managing your Solana assets. It is a prototype developed for the Colosseum Hackathon, aimed at breaking down the barriers to mass adoption in the crypto space by integrating advanced features that prioritize user convenience, security, and innovation.
+Stash Wallet is a self-custody crypto wallet built using Solana Web3.js, designed to provide a seamless and user-friendly experience for managing your Solana assets. This is a prototype developed for the Colosseum Hackathon, aimed at breaking down the barriers to mass adoption in the crypto space by integrating advanced features that prioritize user convenience, security, and innovation.
 
 ## Features
 
