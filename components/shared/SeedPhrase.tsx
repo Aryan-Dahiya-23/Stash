@@ -10,6 +10,7 @@ import { derivePath } from "ed25519-hd-key";
 import nacl from "tweetnacl";
 import toast from "react-hot-toast";
 import BackArrowIcon from "../../public/assets/back-arrow-icon.png";
+import { Button } from "../ui/button";
 
 interface SeedPhraseProps {
   mnemonic: string;
@@ -208,23 +209,23 @@ export const SeedPhrase: React.FC<SeedPhraseProps> = ({
             </span>
           </button>
         ) : (
-          <button
+          <Button
             onClick={() => setIsWalletSuccess(true)}
             className="w-[300px] h-[50px] mt-4 bg-[#6782B1] rounded-[15px] flex justify-center items-center transition duration-300 ease-in-out bg-[#0a1527e3] hover:bg-[#0c192ed5]"
           >
             <span className="text-white text-[15px] font-semibold">
               Continue
             </span>
-          </button>
+          </Button>
         ))}
 
       {pathname === "/import" && (
-        <button
+        <Button
           onClick={importWalletUsingSeedPhrase}
           className="w-[300px] h-[50px] mt-9 bg-[#6782B1] rounded-[15px] flex justify-center items-center transition duration-300 ease-in-out bg-[#0a1527e3] hover:bg-[#0c192ed5]"
         >
           <span className="text-white text-[15px] font-semibold">Continue</span>
-        </button>
+        </Button>
       )}
     </>
   );
