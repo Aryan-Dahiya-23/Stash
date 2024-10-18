@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Cookies from "js-cookie";
@@ -29,6 +29,8 @@ export const Password: React.FC<PasswordProps> = ({
   const router = useRouter();
 
   const pathname = window.location.pathname;
+
+  const [agreed, setAgreed] = useState<boolean>(false);
 
   const comparePassword = () => {
     if (password != verifyPassword) {
@@ -76,7 +78,7 @@ export const Password: React.FC<PasswordProps> = ({
         </div>
 
         <input
-          type="text"
+          type="password"
           className="w-[290px] h-[47px] bg-[#34568B] rounded-xl text-left pl-7 text-[15px] font-SE placeholder-[#CECECE] text-white"
           placeholder="Password"
           value={password}
@@ -86,7 +88,7 @@ export const Password: React.FC<PasswordProps> = ({
         <div className="mt-5"></div>
 
         <input
-          type="text"
+          type="password"
           className="w-[290px] h-[47px] bg-[#34568B] rounded-xl text-left pl-7 text-[15px] font-medium placeholder-[#CECECE] text-white"
           placeholder="Confirm password"
           value={verifyPassword}
@@ -100,19 +102,25 @@ export const Password: React.FC<PasswordProps> = ({
       </div>
 
       <div className="flex items-center mr-[90px]">
-        <input type="checkbox" className="w-[12px] h-[12px] mr-2" />
+        <input
+          type="checkbox"
+          className="w-[12px] h-[12px] mr-2"
+          onClick={() => setAgreed(!agreed)}
+        />
         <span className="text-[#868f9c] text-[12px]">
           I agree to the <span className="text-white">Terms of Service</span>
         </span>
       </div>
 
-      <button
+      <Button
         onClick={comparePassword}
-        disabled={password.length === 0 || verifyPassword.length === 0}
+        disabled={
+          password.length === 0 || verifyPassword.length === 0 || !agreed
+        }
         className="w-[300px] h-[50px] mt-4 rounded-[15px]  bg-[#0A1527] flex justify-center items-center transition duration-300 ease-in-out hover:bg-[#0c192e]"
       >
         <span className="text-white text-[15px] font-semibold">Continue</span>
-      </button>
+      </Button>
     </>
   );
 };

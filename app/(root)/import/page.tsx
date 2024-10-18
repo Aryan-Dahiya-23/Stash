@@ -6,6 +6,7 @@ import { useState } from "react";
 import CryptoJS from "crypto-js";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import bs58 from "bs58";
 
 import { ImportWallet } from "@/components/shared/ImportWallet";
 import { SeedPhrase } from "@/components/shared/SeedPhrase";
@@ -50,6 +51,9 @@ export default function Home() {
       expires: now,
       secure: true,
     });
+
+    // const privateKeyArray = bs58.decode(privateKey);
+    // const solanaKeypair = Keypair.fromSecretKey(privateKeyArray);
 
     const secretKey = Uint8Array.from(Buffer.from(privateKey, "hex"));
     const solanaKeypair = Keypair.fromSecretKey(secretKey);

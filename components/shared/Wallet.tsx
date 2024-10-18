@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { Skeleton } from "../ui/skeleton";
 import SendIcon from "../../public/assets/send-icon.png";
 import ReceiveIcon from "../../public/assets/receive-icon.png";
@@ -7,6 +8,8 @@ import SolanaLogoIcon from "../../public/assets/solana-logo.png";
 import TetherIcon from "../../public/assets/tether-icon.png";
 import JupiterIcon from "../../public/assets/jupiter-logo.png";
 import WifIcon from "../../public/assets/wif_icon.png";
+import toast from "react-hot-toast";
+import Cookies from "js-cookie";
 
 interface WalletProps {
   balance: number;
@@ -21,6 +24,23 @@ export const Wallet: React.FC<WalletProps> = ({
   setShowQR,
   setIsSendTransaction,
 }) => {
+  const airdropSolana = () => {
+    const walletPublicKey = Cookies.get("publicKey") || "";
+    console.log(walletPublicKey);
+    const connection = new Connection("https://api.devnet.solana.com");
+    const publicKey = new PublicKey(walletPublicKey);
+
+    connection
+      .requestAirdrop(publicKey, 1 * LAMPORTS_PER_SOL)
+      .then((signature) => {
+        console.log("Airdrop successful! Transaction signature:", signature);
+        toast.success("Airdrop successful!");
+      })
+      .catch((error) => {
+        toast.error("Airdrop limit exceed!");
+        console.error("Airdrop failed:", error);
+      });
+  };
   return (
     <div className="min-h-[480px]">
       <div className="w-full h-[55px] text-center text-[#DEE0E3] text-[38px] font-semibold mt-4">
@@ -30,17 +50,6 @@ export const Wallet: React.FC<WalletProps> = ({
           <Skeleton className="h-10 w-[150px] m-auto" />
         )}
       </div>
-
-      {/* <div className="flex justify-center gap-3 mt-1">
-        <div className="flex flex-col items-center text-[#6DFE8D] text-[13px] font-semibold mt-[2px]">
-          <div>+ $ 343.2</div>
-        </div>
-        <button className="w-[61px] h-[26px] bg-[#193B45] rounded-[6px] flex justify-center items-center">
-          <div className="flex flex-col items-center text-[#6DFE8D] text-[11px] font-semibold">
-            <div>+ 14.65%</div>
-          </div>
-        </button>
-      </div> */}
 
       <div className="w-[250px] grid grid-cols-3 gap-1 m-auto mb-6 mt-2">
         <div
@@ -72,12 +81,12 @@ export const Wallet: React.FC<WalletProps> = ({
           </span>
         </div>
 
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center" onClick={airdropSolana}>
           <button className="w-[60px] h-[43px] bg-[#3A5D94]/30 rounded-xl flex justify-center items-center mt-4 focus:outline-none hover:bg-[#030811] transition duration-200">
             <Image src={BuyIcon} width={38} height={30} alt="Dropdown Icon" />
           </button>
           <span className="text-[#DEE0E3] text-[12px] font-medium mt-2">
-            Buy
+            Airdrop SOL
           </span>
         </div>
       </div>

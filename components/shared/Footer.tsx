@@ -40,7 +40,7 @@ export const Footer: React.FC<FooterProps> = ({
 }) => {
   return (
     <div
-      className={`w-[360px] h-[60px] mt-3 bg-[#0A1527] flex justify-center items-center flex-col p-3 `}
+      className={`w-[360px] h-[60px] rounded-b-lg mt-3 bg-[#0A1527] flex justify-center items-center flex-col p-3 `}
     >
       <div className="grid grid-cols-5 gap-2 mt-2 mb-2 w-full">
         <button

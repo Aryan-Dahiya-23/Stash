@@ -210,7 +210,7 @@ export const SeedPhrase: React.FC<SeedPhraseProps> = ({
         ) : (
           <button
             onClick={() => setIsWalletSuccess(true)}
-            className="w-[300px] h-[50px] mt-4 bg-[#6782B1] rounded-[15px] flex justify-center items-center transition duration-300 ease-in-out hover:bg-[#5c749e]"
+            className="w-[300px] h-[50px] mt-4 bg-[#6782B1] rounded-[15px] flex justify-center items-center transition duration-300 ease-in-out bg-[#0a1527e3] hover:bg-[#0c192ed5]"
           >
             <span className="text-white text-[15px] font-semibold">
               Continue

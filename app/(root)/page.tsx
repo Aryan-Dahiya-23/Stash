@@ -24,14 +24,14 @@ export default function Home() {
       <div className="w-full flex flex-col space-y-4 px-4">
         <Button
           asChild
-          className="rounded-xl py-6 bg-[#6782B1] text-sm font-semibold text-white transition duration-300 ease-in-out hover:bg-[#5c749e]"
+          className="rounded-xl py-6 bg-[#6782B1] text-sm font-semibold text-white transition duration-300 ease-in-out bg-[#0a1527e3] hover:bg-[#0c192ed5]"
         >
           <Link href="/create">Create a wallet</Link>
         </Button>
 
         <Button
           asChild
-          className="rounded-xl py-6 bg-[#0A1527] text-sm font-semibold text-white transition duration-300 ease-in-out hover:bg-[#0c192e]"
+          className="rounded-xl py-6 text-sm font-semibold text-white transition duration-300 ease-in-out bg-[#405983] hover:bg-[#5c749e]"
         >
           <Link href="/import">I already have a wallet</Link>
         </Button>

@@ -4,6 +4,7 @@ import BackArrowIcon from "../../public/assets/back-arrow-icon.png";
 import HideIcon from "../../public/assets/Hide.png";
 import { Keypair } from "@solana/web3.js";
 import toast from "react-hot-toast";
+// import bs58 from "bs58";
 
 interface PrivateKeyProps {
   importSuccess: boolean;
@@ -22,9 +23,12 @@ export const PrivateKey: React.FC<PrivateKeyProps> = ({
 }) => {
   const importWalletUsingPrivateKey = () => {
     try {
-      const privateKeyArray = Uint8Array.from(Buffer.from(privateKey, "hex"));
+      const privateKeyArray = Uint8Array.from(Buffer.from(privateKey));
 
       const keypair = Keypair.fromSecretKey(privateKeyArray);
+
+      // const privateKeyArray = bs58.decode(privateKey);
+      // const keypair = Keypair.fromSecretKey(privateKeyArray);
 
       if (keypair) {
         setImportSuccess(true);

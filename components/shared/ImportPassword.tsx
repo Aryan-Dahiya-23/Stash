@@ -62,7 +62,7 @@ export const ImportPassword: React.FC<ImportPasswordProps> = ({
         <div className="mt-5"></div>
 
         <input
-          type="text"
+          type="password"
           className="w-[290px] h-[47px] bg-[#34568B] rounded-xl text-left pl-7 text-[15px] font-SE placeholder-[#CECECE] text-white"
           placeholder="Password"
           value={password}

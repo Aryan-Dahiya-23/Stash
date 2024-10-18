@@ -1,5 +1,6 @@
 import Image from "next/image";
 import NoteIcon from "../../public/assets/note_icon.png";
+import toast from "react-hot-toast";
 
 export const Vault = () => {
   return (
@@ -23,6 +24,7 @@ export const Vault = () => {
             width={25}
             className="ml-[235px] mb"
             alt="Notes Icon"
+            onClick={() => toast("Coming Soon")}
           />
         </div>
       </div>

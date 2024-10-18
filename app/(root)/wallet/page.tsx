@@ -26,6 +26,7 @@ import { NameGeneration } from "@/components/shared/NameGeneration";
 import { NFT } from "@/components/shared/NFT";
 import { Vault } from "@/components/shared/Vault";
 import { SwapTokens } from "@/components/shared/SwapTokens";
+import bs58 from "bs58";
 
 interface Wallet {
   publicKey: string;
@@ -95,6 +96,8 @@ export default function Home() {
 
       if (privateKey) {
         try {
+          // const privateKeyArray = bs58.decode(privateKey);
+          // const solanaKeypair = Keypair.fromSecretKey(privateKeyArray);
           const secretKey = Uint8Array.from(Buffer.from(privateKey, "hex"));
           const solanaKeypair = Keypair.fromSecretKey(secretKey);
           const publicKey = solanaKeypair.publicKey.toBase58();
@@ -103,7 +106,7 @@ export default function Home() {
           getBalance();
           getCustomName(publicKey);
         } catch (error) {
-          router.push("/login");
+          router.push("/import");
         }
       } else {
         router.push("/login");
@@ -354,3 +357,6 @@ export default function Home() {
 
 // EEYsknnVYZ5C2gMBBrmTbTMqmdhwprdTToe4VhjJu8AR
 // f6278b2ecbeeb4ce2a9bb0fa1b904b02f527f73ef0b01545d56598e6bebf6315c4a08596fe4b085df557ba3c2caf682dc5d2532cd089ddcbfb8fc7dffe11058e
+
+// 9JDGCxQjmQ6WRvVELaWsBrWsUjd3KqXYQKDdoo5GyRYW
+// dcdb44331409e5180ff61579606bfdec0bfcc33b38bc9f7db00affc884978e137b463beab53d95ffca4d0fa9b3fba20c856e00a61adeed2d02a30615a639a433
