@@ -23,7 +23,8 @@ export const PrivateKey: React.FC<PrivateKeyProps> = ({
 }) => {
   const importWalletUsingPrivateKey = () => {
     try {
-      const privateKeyArray = Uint8Array.from(Buffer.from(privateKey));
+      // const privateKeyArray = Uint8Array.from(Buffer.from(privateKey));
+      const privateKeyArray = Uint8Array.from(Buffer.from(privateKey, "hex"));
 
       const keypair = Keypair.fromSecretKey(privateKeyArray);
 
