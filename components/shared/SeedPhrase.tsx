@@ -53,9 +53,43 @@ export const SeedPhrase: React.FC<SeedPhraseProps> = ({
     setSeedWords(updatedSeedWords);
   };
 
+  const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const pasteData = event.clipboardData.getData("Text").trim();
+    const words = pasteData.split(/\s+/);
+    if (words.length === 12) {
+      setSeedWords(words);
+    } else {
+      console.warn("Please paste exactly 12 words.");
+    }
+  };
+
+  const generateWallet = async () => {
+    try {
+      const newMnemonic = generateMnemonic();
+      setMnemonic(newMnemonic);
+      setSeedWords(newMnemonic.split(" "));
+
+      const path = "m/44'/501'/0'/0'";
+
+      const seed = await bip39.mnemonicToSeed(newMnemonic);
+      const { key } = derivePath(path, seed.toString("hex"));
+      const keypair = Keypair.fromSeed(new Uint8Array(key));
+
+      const solanaKeypair = Keypair.fromSecretKey(keypair.secretKey);
+      const publicKey = solanaKeypair.publicKey.toBase58();
+      const privateKey = Buffer.from(solanaKeypair.secretKey).toString("hex");
+      setPrivateKey(privateKey);
+      setIsWalletGenerated(true);
+      toast("Wallet successfully generated", {
+        icon: "✅",
+      });
+    } catch (error) {
+      toast.error("Failed to create wallet. Please try again");
+    }
+  };
+
   const importWalletUsingSeedPhrase = async () => {
-    toast("import");
-    console.log(mnemonic);
     try {
       if (!bip39.validateMnemonic(mnemonic)) {
         toast.error("Invalid Seed Phrase. Please check and try again.", {
@@ -64,24 +98,20 @@ export const SeedPhrase: React.FC<SeedPhraseProps> = ({
         return;
       }
 
-      // Generate seed from mnemonic
+      const path = "m/44'/501'/0'/0'";
       const seed = await bip39.mnemonicToSeed(mnemonic);
+      const { key } = derivePath(path, seed.toString("hex"));
+      const keypair = Keypair.fromSeed(new Uint8Array(key));
 
-      const derivedSeed = Uint8Array.prototype.slice.call(seed, 0, 32);
-      const keypair = Keypair.fromSeed(new Uint8Array(derivedSeed));
+      const publicKey = keypair.publicKey.toBase58();
+      const privateKey = Buffer.from(keypair.secretKey).toString("hex");
 
-      const solanaKeypair = Keypair.fromSecretKey(keypair.secretKey);
-      const publicKey = solanaKeypair.publicKey.toBase58();
-      const newPrivateKey = Buffer.from(solanaKeypair.secretKey).toString(
-        "hex"
-      );
+      setPrivateKey(privateKey);
+      setIsWalletSuccess(true);
 
-      // Update state
-      setPrivateKey(newPrivateKey);
-      toast.success("Wallet imported successfully!", {
+      toast("Wallet successfully imported", {
         icon: "✅",
       });
-      setIsWalletSuccess(true);
     } catch (error) {
       console.error("Error importing wallet:", error);
       toast.error("Failed to import wallet. Please try again.", {
@@ -89,103 +119,6 @@ export const SeedPhrase: React.FC<SeedPhraseProps> = ({
       });
     }
   };
-
-  const generateWallet = async () => {
-    toast("generate");
-    const newMnemonic = generateMnemonic();
-    setMnemonic(newMnemonic);
-    setSeedWords(newMnemonic.split(" "));
-
-    const seed = await bip39.mnemonicToSeed(newMnemonic);
-
-    // const path = `m/44'/501'/0'/0'`;
-    // const derivedSeed = derivePath(path, seed.toString("hex")).key;
-
-    // const derivedSeedUint8Array = new Uint8Array(derivedSeed);
-    // const keypair = nacl.sign.keyPair.fromSeed(derivedSeedUint8Array);
-
-    const derivedSeed = Uint8Array.prototype.slice.call(seed, 0, 32);
-    const keypair = Keypair.fromSeed(new Uint8Array(derivedSeed));
-
-    const solanaKeypair = Keypair.fromSecretKey(keypair.secretKey);
-    const publicKey = solanaKeypair.publicKey.toBase58();
-    const privateKey = Buffer.from(solanaKeypair.secretKey).toString("hex");
-    setPrivateKey(privateKey);
-    setIsWalletGenerated(true);
-    toast("Wallet successfully generated", {
-      icon: "✅",
-    });
-  };
-
-  // const importWalletUsingSeedPhrase = async () => {
-  //   toast("import");
-  //   console.log(mnemonic);
-  //   try {
-  //     if (!bip39.validateMnemonic(mnemonic)) {
-  //       toast.error("Invalid Seed Phrase. Please check and try again.", {
-  //         icon: "❌",
-  //       });
-  //       return;
-  //     }
-
-  //     const seed = await bip39.mnemonicToSeed(mnemonic);
-  //     console.log(seed);
-
-  //     const derivedSeed = seed.slice(0, 32);
-  //     console.log(derivedSeed);
-
-  //     const derivedSeedUint8Array = new Uint8Array(derivedSeed);
-  //     const keypair = nacl.sign.keyPair.fromSeed(derivedSeedUint8Array);
-  //     console.log(keypair);
-
-  //     const solanaKeypair = Keypair.fromSecretKey(
-  //       Uint8Array.from(keypair.secretKey)
-  //     );
-
-  //     const publicKey = solanaKeypair.publicKey.toBase58();
-  //     const newPrivateKey = Buffer.from(solanaKeypair.secretKey).toString(
-  //       "hex"
-  //     );
-
-  //     setPrivateKey(newPrivateKey);
-
-  //     toast.success("Wallet imported successfully!", {
-  //       icon: "✅",
-  //     });
-  //     setIsWalletSuccess(true);
-  //   } catch (error) {
-  //     console.error("Error importing wallet:", error);
-  //     toast.error("Failed to import wallet. Please try again.", {
-  //       icon: "❌",
-  //     });
-  //   }
-  // };
-
-  // async function generateWallet() {
-  //   toast("generate");
-  //   const newMnemonic = generateMnemonic();
-  //   setMnemonic(newMnemonic);
-  //   setSeedWords(newMnemonic.split(" "));
-  //   console.log(`Generated Mnemonic: ${newMnemonic}`);
-
-  //   const seed = mnemonicToSeedSync(newMnemonic);
-
-  //   const path = `m/44'/501'/0'/0'`;
-  //   const derivedSeed = derivePath(path, seed.toString("hex")).key;
-
-  //   const derivedSeedUint8Array = new Uint8Array(derivedSeed);
-
-  //   const keypair = nacl.sign.keyPair.fromSeed(derivedSeedUint8Array);
-
-  //   const solanaKeypair = Keypair.fromSecretKey(keypair.secretKey);
-  //   const publicKey = solanaKeypair.publicKey.toBase58();
-  //   const privateKey = Buffer.from(solanaKeypair.secretKey).toString("hex");
-  //   setPrivateKey(privateKey);
-  //   setIsWalletGenerated(true);
-  //   toast("Wallet successfully generated", {
-  //     icon: "✅",
-  //   });
-  // }
 
   return (
     <>
@@ -245,6 +178,9 @@ export const SeedPhrase: React.FC<SeedPhraseProps> = ({
             value={word}
             disabled={pathname === "/create"}
             onChange={(e) => handleInputChange(index, e.target.value)}
+            onPaste={
+              pathname === "/import" && index === 0 ? handlePaste : undefined
+            }
           />
         ))}
       </div>
